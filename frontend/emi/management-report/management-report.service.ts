@@ -40,4 +40,5 @@ export class ManagementReportService {
     .map(resp => resp.data.EventSourcingMonitorHelloWorldSubscription.sn);
 }
 
+
 }
