@@ -19,7 +19,8 @@ class ManagementDashboardCQRS {
 
   }
 
-  handleHelloWorld$({aid, data, user}){
+  handleVehicleSubscriptionPaid$({ aid, data, user }){
+    console.log({aid, data, user});
     return of(aid);
   }
 

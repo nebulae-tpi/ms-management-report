@@ -10,7 +10,6 @@ import {
 @Injectable()
 export class ManagementReportService {
 
-
   constructor(private gateway: GatewayService) {
 
   }

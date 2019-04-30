@@ -122,11 +122,10 @@ class EventStoreService {
   generateFunctionMap() {
     return {
       //Sample for handling event-sourcing events, please remove
-      HelloWorldEvent: {
-        fn: ManagementDashboardES.handleHelloWorld$,
+      VehicleSubscriptionPaid: {
+        fn: ManagementDashboardES.handleVehicleSubscriptionPaid$,
         obj: ManagementDashboardES
       },
-
     };
   }
 
@@ -137,10 +136,9 @@ class EventStoreService {
     return [
       //Sample for assoc events and aggregates, please remove
       {
-        aggregateType: "HelloWorld",
-        eventType: "HelloWorldEvent"
+        aggregateType: "Vehicle",
+        eventType: "VehicleSubscriptionPaid"
       },
-
     ]
   }
 }
