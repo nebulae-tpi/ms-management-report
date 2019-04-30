@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mana-repo-mongo
+spec:
+  ports:
+  - port: 27017
+    name: mana-repo-mongo
+  selector:
+    app: mana-repo-mongo
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mana-repo-mongo-pv-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 0.5Gi
+---
+apiVersion: apps/v1beta2 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: mana-repo-mongo
+spec:
+  selector:
+    matchLabels:
+      app: mana-repo-mongo
+  strategy:
+    type: Recreate      
+  template:
+    metadata:
+      labels:
+        app: mana-repo-mongo
+    spec:
+      containers:
+      - image: mongo:4
+        name: mana-repo-mongo        
+        ports:
+        - containerPort: 27017
+          name: mana-repo-mongo
+        volumeMounts:
+        - name: mana-repo-mongo-persistent-storage
+          mountPath: /data/db
+        resources:
+          requests:
+            cpu: "50m"
+      volumes:
+      - name: mana-repo-mongo-persistent-storage
+        persistentVolumeClaim:
+          claimName: mana-repo-mongo-pv-claim      
