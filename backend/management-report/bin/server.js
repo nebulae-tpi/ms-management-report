@@ -7,16 +7,18 @@ if (process.env.NODE_ENV !== 'production') {
 const eventSourcing = require('./tools/EventSourcing')();
 const eventStoreService = require('./services/event-store/EventStoreService')();
 const mongoDB = require('./data/MongoDB').singleton();
-const HelloWorldDA = require('./data/HelloWorldDA');
 const graphQlService = require('./services/emi-gateway/GraphQlService')();
-const Rx = require('rxjs');
+const ManagementDashboard = require("./domain/dashboard");
+const { concat, forkJoin } = require('rxjs');
 
 const start = () => {
-    Rx.concat(
+    concat(
         eventSourcing.eventStore.start$(),
         eventStoreService.start$(),
         mongoDB.start$(),
-        HelloWorldDA.start$(),
+        forkJoin(
+            ManagementDashboard.start$
+        ),
         graphQlService.start$()
     ).subscribe(
         (evt) => {

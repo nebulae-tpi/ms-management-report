@@ -1,6 +1,6 @@
 "use strict";
 
-const { helloWorldCQRS } = require("../../domain/hello-word");
+const { ManagementDashboardCQRS } = require("../../domain/dashboard");
 const broker = require("../../tools/broker/BrokerFactory")();
 const { of, from } = require("rxjs");
 const jsonwebtoken = require("jsonwebtoken");
@@ -161,8 +161,8 @@ class GraphQlService {
     return {
       //Sample incoming request, please remove
       "emi-gateway.graphql.query.getHelloWorldFromManagementReport": {
-        fn: helloWorldCQRS.getHelloWorld$,
-        obj: helloWorldCQRS
+        fn: ManagementDashboardCQRS.getHelloWorld$,
+        obj: ManagementDashboardCQRS
       },      
     };
   }
