@@ -45,7 +45,8 @@ class ManagementDashboardCQRS {
 
   handleVehicleSubscriptionPaid$({ et, etv, at, aid, user, timestamp, av, data }){
     console.log({ et, etv, at, aid, user, timestamp, av, data });
-    const { businessId, licensePlate, packProduct, quantity, amount, daysPaid } = data;
+    const { licensePlate, packProduct, quantity, amount, daysPaid } = data;
+    let businessId = data.businessId;
     const { year, monthStr, month, week, dayOfWeek, dayOfWeekStr, dayOfYear, dayOfMonth, hourOfDay, minute, second } = this.decomposeTime(timestamp);
 
     const fieldsToSet = [['lastUpdate', Date.now()]];
