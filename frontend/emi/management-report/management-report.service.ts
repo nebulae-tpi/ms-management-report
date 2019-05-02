@@ -9,10 +9,7 @@ import {
 
 @Injectable()
 export class ManagementReportService {
-
-  constructor(private gateway: GatewayService) {
-
-  }
+  constructor(private gateway: GatewayService) {}
 
   /**
    * Hello World sample, please remove
@@ -23,22 +20,17 @@ export class ManagementReportService {
         query: getHelloWorld,
         fetchPolicy: "network-only"
       })
-      .valueChanges.map(
-        resp => resp.data.getHelloWorldFromManagementReport.sn
-      );
+      .valueChanges.map(resp => resp.data.getHelloWorldFromManagementReport.sn);
   }
 
   /**
-  * Hello World subscription sample, please remove
-  */
- getEventSourcingMonitorHelloWorldSubscription$(): Observable<any> {
-  return this.gateway.apollo
-    .subscribe({
-      query: ManagementReportHelloWorldSubscription
-    })
-    .map(resp => resp.data.EventSourcingMonitorHelloWorldSubscription.sn);
-}
-
-
-
+   * Hello World subscription sample, please remove
+   */
+  getEventSourcingMonitorHelloWorldSubscription$(): Observable<any> {
+    return this.gateway.apollo
+      .subscribe({
+        query: ManagementReportHelloWorldSubscription
+      })
+      .map(resp => resp.data.EventSourcingMonitorHelloWorldSubscription.sn);
+  }
 }

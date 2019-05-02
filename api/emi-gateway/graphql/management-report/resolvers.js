@@ -31,7 +31,6 @@ function getResponseFromBackEnd$(response) {
 module.exports = {
 
     //// QUERY ///////
-
     Query: {
         getHelloWorldFromManagementReport(root, args, context) {
             return RoleValidator.checkPermissions$(context.authToken.realm_access.roles, 'ms-'+'ManagementReport', 'getHelloWorldFromManagementReport', PERMISSION_DENIED_ERROR_CODE, 'Permission denied', [])

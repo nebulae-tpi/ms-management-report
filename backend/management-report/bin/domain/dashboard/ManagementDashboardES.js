@@ -7,7 +7,9 @@ const MATERIALIZED_VIEW_TOPIC = "emi-gateway-materialized-view-updates";
 const Event = require("@nebulae/event-store").Event;
 const eventSourcing = require("../../tools/EventSourcing")();
 const uuidv4 = require("uuid/v4");
+const gregorian = require('weeknumber');
 const DashboardDA = require("./data-access/ManagementDashboardDA");
+const SUBSCRIPTION_TYPE_PRICES = { WEEK: 12000 };
 
 /**
  * Singleton instance
@@ -16,11 +18,34 @@ let instance;
 
 class ManagementDashboardCQRS {
   constructor() {
-
+    // of({})
+    // .pipe(
+    //   delay(3000),
+    //   mergeMap(() => eventSourcing.eventStore.emitEvent$(
+    //     new Event({
+    //       eventType: "VehicleSubscriptionPaid",
+    //       eventTypeVersion: 1,
+    //       aggregateType: "Vehicle",
+    //       aggregateId: uuidv4(),
+    //       data: {
+    //         licensePlate: 'TKM909',
+    //         packProduct: 'WEEK',
+    //         quantity: 3,
+    //         amount: 36000,
+    //         businessId: 'q1w2e3-r4t5-y6u7',
+    //         daysPaid: 21
+    //       },
+    //       user: 'juan.santa'
+    //     })
+    //   ),      
+    //   )
+    // )
+    // .subscribe(ok => {}, e => console.log(e), () => {})
   }
 
   handleVehicleSubscriptionPaid$({ et, etv, at, aid, user, timestamp, av, data }){
-    const { licensePlate, packProduct, quantity, amount, daysPaid } = data;
+    console.log({ et, etv, at, aid, user, timestamp, av, data });
+    const { businessId, licensePlate, packProduct, quantity, amount, daysPaid } = data;
     const { year, monthStr, month, week, dayOfWeek, dayOfWeekStr, dayOfYear, dayOfMonth, hourOfDay, minute, second } = this.decomposeTime(timestamp);
 
     const fieldsToSet = [['lastUpdate', Date.now()]];
@@ -28,7 +53,7 @@ class ManagementDashboardCQRS {
     
     fieldsToInc.push([`subscription.payment.count`, 1]);
     fieldsToInc.push([`subscription.payment.days`, daysPaid]);
-    fieldsToInc.push([`subscription.payment.value`, amount ]);
+    fieldsToInc.push([`subscription.payment.value`, amount ? amount : SUBSCRIPTION_TYPE_PRICES[packProduct] ]);
 
     return forkJoin(
       // YEAR
