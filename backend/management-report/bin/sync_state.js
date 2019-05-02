@@ -8,12 +8,14 @@ const mongoDB = require('./data/MongoDB').singleton();
 const eventSourcing = require('./tools/EventSourcing')();
 const eventStoreService = require('./services/event-store/EventStoreService')();
 const Rx = require('rxjs');
+const ManagementDashboard = require("./domain/dashboard");
 
 const start = () => {
     Rx.concat(
         // initializing needed resources
         mongoDB.start$(),
         eventSourcing.eventStore.start$(),
+        ManagementDashboard.start$,
         
         // // executing maintenance tasks
         eventStoreService.syncState$(),
