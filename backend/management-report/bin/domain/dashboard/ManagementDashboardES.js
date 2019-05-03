@@ -52,14 +52,14 @@ class ManagementDashboardCQRS {
     const fieldsToSet = [['lastUpdate', Date.now()]];
     const fieldsToInc = [];
     
-    // TEMPORAL FIX 
-    const nebulaPlates = ['FQX351', 'DSV006', 'DER596', 'MNP137', 'IEY523', 'FQX252', 'TSZ705', 'RTF752', 'IHR821'];
-    if(!businessId){
+    // EVENT MAPPER FOR VERSION 1
+    if(etv == 1){
+      const nebulaPlates = ['FQX351', 'DSV006', 'DER596', 'MNP137', 'IEY523', 'FQX252', 'TSZ705', 'RTF752', 'IHR821'];
       businessId = nebulaPlates.includes(licensePlate) 
         ? "bf2807e4-e97f-43eb-b15d-09c2aff8b2ab" // Nebula
         : "75cafa6d-0f27-44be-aa27-c2c82807742d" // TXPlus
-    }
-    // TEMPORAL FIX
+    }   
+    // EVENT MAPPER FOR VERSION 1
     
     fieldsToInc.push([`subscription.payment.count`, 1]);
     fieldsToInc.push([`subscription.payment.days`, daysPaid]);
