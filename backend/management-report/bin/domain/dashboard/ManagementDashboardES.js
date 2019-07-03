@@ -89,6 +89,14 @@ class ManagementDashboardCQRS {
     );
   }
 
+  handleSaleWalletRechargeCommited$({ et, etv, at, aid, user, timestamp, av, data }){;
+    const { walletId, businessId, amount }  = data;
+    console.log("handleSaleWalletRechargeCommited", aid, user, amount);
+    return of({});
+
+
+  }
+
   decomposeTime(ts) {
     //2018-12-4 17:12:05
     const date = new Date(new Date(ts).toLocaleString('es-CO', { timeZone: 'America/Bogota' }));

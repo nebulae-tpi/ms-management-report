@@ -126,6 +126,10 @@ class EventStoreService {
         fn: ManagementDashboardES.handleVehicleSubscriptionPaid$,
         obj: ManagementDashboardES
       },
+      SaleWalletRechargeCommited: {
+        fn: ManagementDashboardES.handleSaleWalletRechargeCommited$,
+        obj: ManagementDashboardES
+      }
     };
   }
 
@@ -139,6 +143,10 @@ class EventStoreService {
         aggregateType: "Vehicle",
         eventType: "VehicleSubscriptionPaid"
       },
+      {
+        aggregateType: "Sale",
+        eventType: "SaleWalletRechargeCommited"
+      }
     ]
   }
 }
