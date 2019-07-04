@@ -3,7 +3,7 @@
 require("datejs");
 let mongoDB = undefined;
 //const mongoDB = require('./MongoDB')();
-const COLLECTION_NAME = "TimeBox";
+const COLLECTION_NAME = "BusinessUnitSummary";
 const { CustomError } = require("../../../tools/customError");
 const { map, mergeMap, reduce, tap } = require("rxjs/operators");
 const { of, Observable, defer, from, range } = require("rxjs");

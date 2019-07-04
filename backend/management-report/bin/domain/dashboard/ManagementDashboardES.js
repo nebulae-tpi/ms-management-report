@@ -43,10 +43,10 @@ class ManagementDashboardCQRS {
     // .subscribe(ok => {}, e => console.log(e), () => {})
   }
 
-  handleVehicleSubscriptionPaid$({ et, etv, at, aid, user, timestamp, av, data }){
-    console.log({ et, etv, at, aid, user, timestamp, av, data });
+  handleVehicleSubscriptionPaid$({ etv, user, timestamp, data }){
     const { licensePlate, packProduct, quantity, amount, daysPaid } = data;
     let businessId = data.businessId;
+    const parsedUser = user.replace(/\./g, "-");
     const { year, monthStr, month, week, dayOfWeek, dayOfWeekStr, dayOfYear, dayOfMonth, hourOfDay, minute, second } = this.decomposeTime(timestamp);
 
     const fieldsToSet = [['lastUpdate', Date.now()]];
@@ -61,9 +61,12 @@ class ManagementDashboardCQRS {
     }   
     // EVENT MAPPER FOR VERSION 1
     
-    fieldsToInc.push([`subscription.payment.count`, 1]);
-    fieldsToInc.push([`subscription.payment.days`, daysPaid]);
-    fieldsToInc.push([`subscription.payment.value`, amount ? amount : SUBSCRIPTION_TYPE_PRICES[packProduct] ]);
+    fieldsToInc.push(['pos.subscriptionSale.count', 1]);
+    fieldsToInc.push(['pos.subscriptionSale.days', daysPaid]);
+    fieldsToInc.push(['pos.subscriptionSale.value', amount ? amount : SUBSCRIPTION_TYPE_PRICES[packProduct] ]);
+    fieldsToInc.push([`pos.subscriptionSale.${parsedUser}.count`, 1 ]);
+    fieldsToInc.push([`pos.subscriptionSale.${parsedUser}.days`, daysPaid ]);
+    fieldsToInc.push([`pos.subscriptionSale.${parsedUser}.value`, amount ? amount : SUBSCRIPTION_TYPE_PRICES[packProduct] ]);
 
     return forkJoin(
       // YEAR
@@ -89,10 +92,41 @@ class ManagementDashboardCQRS {
     );
   }
 
-  handleSaleWalletRechargeCommited$({ et, etv, at, aid, user, timestamp, av, data }){;
+  handleSaleWalletRechargeCommited$({ user, timestamp, data }){
+
     const { walletId, businessId, amount }  = data;
-    console.log("handleSaleWalletRechargeCommited", aid, user, amount);
-    return of({});
+    const { year, monthStr, month, week, dayOfWeek, dayOfWeekStr, dayOfYear, dayOfMonth, hourOfDay, minute, second } = this.decomposeTime(timestamp);
+    const parsedUser = user.replace(/\./g, "-");
+    const fieldsToSet = [['lastUpdate', Date.now()]];
+    const fieldsToInc = [];
+    
+    fieldsToInc.push(['pos.walletRecharge.count', 1]);
+    fieldsToInc.push(['pos.walletRecharge.value', amount]);
+    fieldsToInc.push([`pos.walletRecharge.${parsedUser}.count`, 1 ]);
+    fieldsToInc.push([`pos.walletRecharge.${parsedUser}.value`, amount ]);
+
+    return forkJoin(
+      // YEAR
+      DashboardDA.updateTimeBox$(
+        [ ['businessId', businessId], ['timespanType', 'YEAR'], ['YEAR', year] ], fieldsToSet, fieldsToInc
+      ),
+      // MONTH
+      DashboardDA.updateTimeBox$(
+        [ ['businessId', businessId], ['timespanType', 'MONTH'], ['YEAR', year], ['MONTH', month] ],
+        fieldsToSet, fieldsToInc, [['MONTH_NAME', monthStr]]
+      ),
+      // WEEK
+      DashboardDA.updateTimeBox$(
+        [ ['businessId', businessId], ['timespanType', 'WEEK'], ['YEAR', year], ['MONTH', month], ['WEEK', week] ],
+        fieldsToSet, fieldsToInc
+      ),
+      // DAY
+      DashboardDA.updateTimeBox$(
+        [ ['businessId', businessId], ['timespanType', 'DAY'], ['YEAR', year], ['MONTH', month], ['DAY', dayOfMonth] ],
+        fieldsToSet, fieldsToInc,
+        [ ['WEEK', week], ['DAY_OF_YEAR', dayOfYear], ['DAY_NAME', dayOfWeekStr], ['DAY_OF_WEEK', dayOfWeek] ]
+      ),
+    );
 
 
   }
