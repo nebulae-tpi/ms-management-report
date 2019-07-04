@@ -13,7 +13,6 @@ const graphQlService = require('./services/emi-gateway/GraphQlService')();
 const ManagementDashboard = require("./domain/dashboard");
 const { concat, forkJoin } = require('rxjs');
 
-
 const start = () => {
     concat(
         eventSourcing.eventStore.start$(),
