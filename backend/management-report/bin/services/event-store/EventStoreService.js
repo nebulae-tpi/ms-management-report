@@ -10,7 +10,7 @@ let instance;
 /**
  * Micro-BackEnd key
  */
-const mbeKey = "ms-management-report_mbe_management-report_007";
+const mbeKey = "ms-management-report_mbe_management-report_008";
 
 class EventStoreService {
   constructor() {
@@ -64,7 +64,7 @@ class EventStoreService {
     const handler = this.functionMap[eventType];
     const subscription =
       //MANDATORY:  AVOIDS ACK REGISTRY DUPLICATIONS
-      eventSourcing.eventStore.ensureAcknowledgeRegistry$(aggregateType).pipe(
+      eventSourcing.eventStore.ensureAcknowledgeRegistry$(aggregateType, mbeKey).pipe(
         mergeMap(() => eventSourcing.eventStore.getEventListener$(aggregateType, mbeKey, false)),
         filter(evt => evt.et === eventType),
         mergeMap(evt => concat(
@@ -104,7 +104,7 @@ class EventStoreService {
   subscribeEventRetrieval$({ aggregateType, eventType }) {
     const handler = this.functionMap[eventType];
     //MANDATORY:  AVOIDS ACK REGISTRY DUPLICATIONS
-    return eventSourcing.eventStore.ensureAcknowledgeRegistry$(aggregateType).pipe(
+    return eventSourcing.eventStore.ensureAcknowledgeRegistry$(aggregateType, mbeKey).pipe(
       switchMap(() => eventSourcing.eventStore.retrieveUnacknowledgedEvents$(aggregateType, mbeKey)),
       filter(evt => evt.et === eventType),
       concatMap(evt => concat(
