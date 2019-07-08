@@ -13,7 +13,7 @@ spec:
         app: management-report
     spec:      
       containers:
-      - image: nebulaetpi/management-report.backend.management-report:0.0.17
+      - image: nebulaetpi/management-report.backend.management-report:0.0.18
         name: management-report
         volumeMounts:
         - name: google-application-credentials
@@ -55,7 +55,7 @@ spec:
           value: PUBSUB
         # RESET LOCK INITIALIZE BACKED
         - name: LOCKVERSION
-          value: "08-07-19_2"
+          value: "08-07-19_3"
         
       volumes:
       - name: google-application-credentials
