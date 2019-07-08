@@ -22,14 +22,14 @@ class ManagementDashboardDA {
     });
   }
 
-  static updateTimeBox$(keys, fieldsToSet, fieldsToInc, secondaryKeys = []) {
+  static updateTimeBox$(timestamp, keys, fieldsToSet, fieldsToInc, secondaryKeys = []) {
     const collection = mongoDB.db.collection(COLLECTION_NAME);
     const _id = keys.map(([k, v]) => v).join('_');
     const [query, update,opt] = [
       { _id },
       {
         '$setOnInsert': { 
-          timestamp: Date.now(),
+          timestamp,
           ...keys.reduce((obj, [key, value]) => { obj[key] = value; return obj; }, {}),
           ...secondaryKeys.reduce((obj, [key, value]) => { obj[key] = value; return obj; }, {})
         },

@@ -70,21 +70,21 @@ class ManagementDashboardCQRS {
 
     return forkJoin(
       // YEAR
-      DashboardDA.updateTimeBox$(
+      DashboardDA.updateTimeBox$( timestamp,
         [ ['businessId', businessId], ['timespanType', 'YEAR'], ['YEAR', year] ], fieldsToSet, fieldsToInc
       ),
       // MONTH
-      DashboardDA.updateTimeBox$(
+      DashboardDA.updateTimeBox$(timestamp,
         [ ['businessId', businessId], ['timespanType', 'MONTH'], ['YEAR', year], ['MONTH', month] ],
         fieldsToSet, fieldsToInc, [['MONTH_NAME', monthStr]]
       ),
       // WEEK
-      DashboardDA.updateTimeBox$(
+      DashboardDA.updateTimeBox$(timestamp,
         [ ['businessId', businessId], ['timespanType', 'WEEK'], ['YEAR', year], ['MONTH', month], ['WEEK', week] ],
         fieldsToSet, fieldsToInc
       ),
       // DAY
-      DashboardDA.updateTimeBox$(
+      DashboardDA.updateTimeBox$(timestamp,
         [ ['businessId', businessId], ['timespanType', 'DAY'], ['YEAR', year], ['MONTH', month], ['DAY', dayOfMonth] ],
         fieldsToSet, fieldsToInc,
         [ ['WEEK', week], ['DAY_OF_YEAR', dayOfYear], ['DAY_NAME', dayOfWeekStr], ['DAY_OF_WEEK', dayOfWeek] ]
@@ -97,7 +97,7 @@ class ManagementDashboardCQRS {
     const { walletId, businessId, amount }  = data;
     const { year, monthStr, month, week, dayOfWeek, dayOfWeekStr, dayOfYear, dayOfMonth, hourOfDay, minute, second } = this.decomposeTime(timestamp);
     const parsedUser = user.replace(/\./g, "-");
-    const fieldsToSet = [['lastUpdate', Date.now()]];
+    const fieldsToSet = [['lastUpdate', timestamp]];
     const fieldsToInc = [];
     
     fieldsToInc.push(['pos.walletRecharge.count', 1]);
@@ -107,21 +107,21 @@ class ManagementDashboardCQRS {
 
     return forkJoin(
       // YEAR
-      DashboardDA.updateTimeBox$(
+      DashboardDA.updateTimeBox$(timestamp,
         [ ['businessId', businessId], ['timespanType', 'YEAR'], ['YEAR', year] ], fieldsToSet, fieldsToInc
       ),
       // MONTH
-      DashboardDA.updateTimeBox$(
+      DashboardDA.updateTimeBox$(timestamp,
         [ ['businessId', businessId], ['timespanType', 'MONTH'], ['YEAR', year], ['MONTH', month] ],
         fieldsToSet, fieldsToInc, [['MONTH_NAME', monthStr]]
       ),
       // WEEK
-      DashboardDA.updateTimeBox$(
+      DashboardDA.updateTimeBox$(timestamp,
         [ ['businessId', businessId], ['timespanType', 'WEEK'], ['YEAR', year], ['MONTH', month], ['WEEK', week] ],
         fieldsToSet, fieldsToInc
       ),
       // DAY
-      DashboardDA.updateTimeBox$(
+      DashboardDA.updateTimeBox$(timestamp,
         [ ['businessId', businessId], ['timespanType', 'DAY'], ['YEAR', year], ['MONTH', month], ['DAY', dayOfMonth] ],
         fieldsToSet, fieldsToInc,
         [ ['WEEK', week], ['DAY_OF_YEAR', dayOfYear], ['DAY_NAME', dayOfWeekStr], ['DAY_OF_WEEK', dayOfWeek] ]
