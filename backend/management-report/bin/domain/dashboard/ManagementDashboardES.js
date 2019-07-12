@@ -49,7 +49,7 @@ class ManagementDashboardCQRS {
     const parsedUser = user.replace(/\./g, "-");
     const { year, monthStr, month, week, dayOfWeek, dayOfWeekStr, dayOfYear, dayOfMonth, hourOfDay, minute, second } = this.decomposeTime(timestamp);
 
-    const fieldsToSet = [['lastUpdate', Date.now()]];
+    const fieldsToSet = [['lastUpdate', timestamp]];
     const fieldsToInc = [];
     
     // EVENT MAPPER FOR VERSION 1
@@ -92,7 +92,7 @@ class ManagementDashboardCQRS {
     );
   }
 
-  handleSaleWalletRechargeCommited$({ user, timestamp, data }){
+  handleSaleWalletRechargeCommited$({ user, timestamp, data }){   
 
     const { walletId, businessId, amount }  = data;
     const { year, monthStr, month, week, dayOfWeek, dayOfWeekStr, dayOfYear, dayOfMonth, hourOfDay, minute, second } = this.decomposeTime(timestamp);

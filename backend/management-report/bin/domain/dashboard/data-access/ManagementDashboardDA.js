@@ -25,7 +25,7 @@ class ManagementDashboardDA {
   static updateTimeBox$(timestamp, keys, fieldsToSet, fieldsToInc, secondaryKeys = []) {
     const collection = mongoDB.db.collection(COLLECTION_NAME);
     const _id = keys.map(([k, v]) => v).join('_');
-    const [query, update,opt] = [
+    const [query, update, opt] = [
       { _id },
       {
         '$setOnInsert': { 
@@ -43,8 +43,8 @@ class ManagementDashboardDA {
       update['$set'] = fieldsToSet.reduce((obj, [key, value]) => { obj[key] = value; return obj; }, {});
     }
 
-    return defer(() => collection.update(query, update,opt)).pipe(
-      tap(x => { if (x.result.ok !== 1) throw (new Error(`timeBox(id:${id}) updated failed`)); }),
+    return defer(() => collection.update(query, update, opt)).pipe(
+      tap(x => { if (x.result.ok !== 1) throw (new Error(`BusinessUnitSummary(id:${id}) updated failed`)); }),
     );
   }
 
