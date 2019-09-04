@@ -1,0 +1,106 @@
+<div id="sample" class="page-layout carded left-sidenav" fusePerfectScrollbar>
+
+  <div class="caja-sample" flexLayout="column">
+
+    <!--<mat-accordion>
+      
+      <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Soy un título
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <p>Soy un texto</p>
+        <p>Souy algo al final</p>
+        
+      </mat-expansion-panel>
+
+    </mat-accordion>-->
+    <!--formulario 1-->
+    <div class="filterk">
+      <div class="titulo1">Filtros Días</div>
+
+      <form action="">
+
+        <mat-form-field>
+          <input matInput [matDatepicker]="pickerInitDate" placeholder="Fecha Inicial">
+          <mat-datepicker-toggle matSuffix [for]="pickerInitDate"></mat-datepicker-toggle>
+          <mat-datepicker #pickerInitDate></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput [matDatepicker]="pickerEndDate" placeholder="Fecha Final">
+          <mat-datepicker-toggle matSuffix [for]="pickerEndDate"></mat-datepicker-toggle>
+          <mat-datepicker #pickerEndDate></mat-datepicker>
+        </mat-form-field>
+
+      </form>
+    </div>
+
+
+
+    <div class="grafica-selector">
+
+      <div class="cabe">
+        <div class="titulo2">Información detallada</div>
+
+        <div class="selec">
+          <div class="pag-rec">
+            <mat-form-field>
+              <mat-label>1: Pagos o Recargas</mat-label>
+              <mat-select>
+                <mat-option value="option1">Pagos</mat-option>
+                <mat-option value="option2">Recargas</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="mess">
+            <mat-form-field>
+              <mat-label>2: Meses disponibles</mat-label>
+              <mat-select>
+                <mat-option value="option1">Option 4</mat-option>
+                <mat-option value="option2">Option 5</mat-option>
+                <mat-option value="option3">Option 6</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="semm">
+            <mat-form-field>
+              <mat-label>3. Semanas disponibles</mat-label>
+              <mat-select>
+                <mat-option value="option1">Option 7</mat-option>
+                <mat-option value="option2">Option 8</mat-option>
+                <mat-option value="option3">Option 9</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <div class="cuer">
+        <div class="sample-grafi" style="display: block">
+          <canvas baseChart chart-click="onClick" [datasets]="barChartData" [labels]="barChartLabels"
+            [options]="barChartOptions" [legend]="barChartLegend" [chartType]="barChartType" (chartClick)="printData()">
+          </canvas>
+        </div>
+      </div>
+
+      <div class="totalp">
+          <div class="pare">
+            <div class="pre2">Total: ${{ totalAmount  }}</div>
+          </div>
+      </div>
+
+
+    </div>
+
+
+
+  </div>
+
+
+</div>

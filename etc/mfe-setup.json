@@ -1,30 +1,30 @@
 [
     {
-        "name": "management-report",
-        "src": "frontend/emi/management-report",
+        "name": "subscriptions-recharges-report",
+        "src": "frontend/emi/subscriptions-recharges-report",
         "groups": [
             {
-              "id": "REPORT",
+              "id": "REPORTS",
               "icon": "location_searching",
               "translate": {
                 "en": "Reports",
                 "es": "Reportes"
               },
-              "priority": 1000
+              "priority": 500
             }
           ],
         "contents": [
             {
-                "groupId": "REPORT",
-                "id": "management-report",
-                "icon": "dashboard",
+                "groupId": "REPORTS",
+                "id": "subscriptions-recharges-report",
+                "icon": "rowing",
                 "translate": {
-                    "en": "Reports",
-                    "es": "Reportes"
+                    "en": "Subscriptions and recharges",
+                    "es": "Subscripciones y recargas"
                 },
-                "navURL": "/management-report",
-                "path": "management-report",
-                "loadChildren": "./main/content/management-report/management-report.module#ManagementReportModule",
+                "navURL": "/subscriptions-recharges-report",
+                "path": "subscriptions-recharges-report",
+                "loadChildren": "./main/content/subscriptions-recharges-report/subscriptions-recharges-report.module#SubscriptionsRechargesReportModule",
                 "priority": 1000,
                 "roles" : ["developer", "PLATFORM-ADMIN"],
                 "default" : false
