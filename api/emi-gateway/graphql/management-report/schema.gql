@@ -4,9 +4,24 @@ type HelloWorldManagementReport{
   sn: String!  
 }
 
+type ManagementReportSummary{
+  timestampType: String
+  timestamp: BigInt
+  count: Int
+  amountValue: Int
+  days: Int
+}
+
 type Query {
   "Hello world sample, please remove"
   getHelloWorldFromManagementReport: HelloWorldManagementReport
+  "get report by day "
+  managementReportSubscriptionRecharge(
+    type: String,
+    timestampType: String,
+    initDate: BigInt,
+    endDate: BigInt
+  ): [ManagementReportSummary]
 }
 
 type Subscription {

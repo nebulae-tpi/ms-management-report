@@ -147,8 +147,8 @@ class GraphQlService {
     return [
       //Sample incoming request, please remove
       {
-        aggregateType: "HelloWorld",
-        messageType: "emi-gateway.graphql.query.getHelloWorldFromManagementReport"
+        aggregateType: "SummaryReport",
+        messageType: "emigateway.graphql.query.managementReportSubscriptionRecharge"
       }     
     ];
   }
@@ -160,8 +160,8 @@ class GraphQlService {
   generateFunctionMap() {    
     return {
       //Sample incoming request, please remove
-      "emi-gateway.graphql.query.getHelloWorldFromManagementReport": {
-        fn: ManagementDashboardCQRS.getHelloWorld$,
+      "emigateway.graphql.query.managementReportSubscriptionRecharge": {
+        fn: ManagementDashboardCQRS.managementReportSubscriptionRecharge$,
         obj: ManagementDashboardCQRS
       },      
     };

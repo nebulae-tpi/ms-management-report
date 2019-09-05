@@ -47,7 +47,25 @@ module.exports = {
                 catchError(err => handleError$(err, "getHelloWorldFromManagementReport")),
                 mergeMap(response => getResponseFromBackEnd$(response))
             ).toPromise();
-        }
+        },
+        managementReportSubscriptionRecharge(root, args, context) {
+            return RoleValidator.checkPermissions$(
+                context.authToken.realm_access.roles, 'ms-'+'ManagementReport',
+                'managementReportSubscriptionRecharge', PERMISSION_DENIED_ERROR_CODE, 'Permission denied', [])
+            .pipe(
+                mergeMap(() =>
+                    broker
+                    .forwardAndGetReply$(
+                        "SummaryReport",
+                        "emigateway.graphql.query.managementReportSubscriptionRecharge",
+                        { root, args, jwt: context.encodedToken },
+                        2000
+                    )
+                ),
+                catchError(err => handleError$(err, "managementReportSubscriptionRecharge")),
+                mergeMap(response => getResponseFromBackEnd$(response))
+            ).toPromise();
+        },
     },
 
     //// MUTATIONS ///////

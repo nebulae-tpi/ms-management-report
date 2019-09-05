@@ -96,7 +96,9 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
         })
       ).subscribe()
   }
-
+  printData(){
+    console.log('printing data');
+  }
 
 
   

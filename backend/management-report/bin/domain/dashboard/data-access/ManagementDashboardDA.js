@@ -48,6 +48,27 @@ class ManagementDashboardDA {
     );
   }
 
+  static getReportByDay$(businessId, timestampType, initDateParsed, endDateParsed){
+    const collection = mongoDB.db.collection(COLLECTION_NAME);
+    const query = { businessId, timestampType: timestampType};
+    switch (timestampType) {
+      case 'DAY':
+        query.DAY_OF_YEAR = { $gte: initDateParsed.dayOfYear , $lte: endDateParsed.dayOfYear }  
+        break;
+      case 'WEEK':
+          query.WEEK = { $gte: initDateParsed.week , $lte: endDateParsed.week }
+          break;
+      case 'MONTH':
+        query.MONTH = { $gte: initDateParsed.month , $lte: endDateParsed.month }
+        break;
+    
+      default:
+        break;
+    }
+
+    return defer(() => collection.find(query).toArray())
+  }
+
   
 }
 /**
