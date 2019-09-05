@@ -11,6 +11,22 @@ export const getHelloWorld = gql`
   }
 `;
 
+export const managementReportSubscriptionRecharge = gql`
+  query managementReportSubscriptionRecharge(
+      $type: String,
+      $timestampType: String,
+      $initDate: BigInt,
+      $endDate: BigInt){
+      managementReportSubscriptionRecharge(type: $type, timestampType: $timestampType, initDate: $initDate, endDate: $endDate){
+        timestampType
+        timestamp
+        count
+        amountValue
+        days      
+    }
+  }
+`;
+
 
 //Hello world sample, please remove
 export const ManagementReportHelloWorldSubscription = gql`

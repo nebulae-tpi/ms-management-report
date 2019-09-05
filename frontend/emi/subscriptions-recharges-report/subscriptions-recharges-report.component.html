@@ -1,37 +1,22 @@
 <div id="sample" class="page-layout carded left-sidenav" fusePerfectScrollbar>
 
   <div class="caja-sample" flexLayout="column">
-
-    <!--<mat-accordion>
-      
-      <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
-
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            Soy un título
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-
-        <p>Soy un texto</p>
-        <p>Souy algo al final</p>
-        
-      </mat-expansion-panel>
-
-    </mat-accordion>-->
-    <!--formulario 1-->
+    
     <div class="filterk">
       <div class="titulo1">Filtros Días</div>
 
-      <form action="">
+      <form [formGroup]="dateFiltersForm">
 
         <mat-form-field>
-          <input matInput [matDatepicker]="pickerInitDate" placeholder="Fecha Inicial">
+          <input matInput [matDatepicker]="pickerInitDate" placeholder="Fecha Inicial"
+            formControlName="initTimestamp" [min]="minInitDate" [max]="maxInitDate" (dateChange)="onInitDateChange()"/>
           <mat-datepicker-toggle matSuffix [for]="pickerInitDate"></mat-datepicker-toggle>
           <mat-datepicker #pickerInitDate></mat-datepicker>
         </mat-form-field>
 
         <mat-form-field>
-          <input matInput [matDatepicker]="pickerEndDate" placeholder="Fecha Final">
+          <input matInput [matDatepicker]="pickerEndDate" placeholder="Fecha Final"
+            formControlName="endTimestamp" [min]="minEndDate" [max]="maxEndDate" (dateChange)="onEndDateChange()"/>
           <mat-datepicker-toggle matSuffix [for]="pickerEndDate"></mat-datepicker-toggle>
           <mat-datepicker #pickerEndDate></mat-datepicker>
         </mat-form-field>
@@ -46,13 +31,13 @@
       <div class="cabe">
         <div class="titulo2">Información detallada</div>
 
-        <div class="selec">
+        <div class="selec" [formGroup]="secondaryFilterForm">
           <div class="pag-rec">
             <mat-form-field>
               <mat-label>1: Pagos o Recargas</mat-label>
-              <mat-select>
-                <mat-option value="option1">Pagos</mat-option>
-                <mat-option value="option2">Recargas</mat-option>
+              <mat-select formControlName="type">
+                <mat-option value="SUBSCRIPTION_PAYMENT">Pago de Subscripción</mat-option>
+                <mat-option value="WALLET_RECHARGES">Recarga de billetera</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
@@ -60,21 +45,17 @@
           <div class="mess">
             <mat-form-field>
               <mat-label>2: Meses disponibles</mat-label>
-              <mat-select>
-                <mat-option value="option1">Option 4</mat-option>
-                <mat-option value="option2">Option 5</mat-option>
-                <mat-option value="option3">Option 6</mat-option>
+              <mat-select formControlName="month">
+                <mat-option *ngFor="let month of monthOptions" value="{{ month }}"> {{month }} </mat-option>
               </mat-select>
             </mat-form-field>
           </div>
 
           <div class="semm">
             <mat-form-field>
-              <mat-label>3. Semanas disponibles</mat-label>
-              <mat-select>
-                <mat-option value="option1">Option 7</mat-option>
-                <mat-option value="option2">Option 8</mat-option>
-                <mat-option value="option3">Option 9</mat-option>
+              <mat-label>3: Semanas disponibles</mat-label>
+              <mat-select formControlName="week">
+                <mat-option *ngFor="let week of weekOptions" value="{{ week }}">{{ 'Semana ' + week }}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>

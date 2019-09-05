@@ -29,7 +29,7 @@ class ManagementDashboardCQRS {
   }
 
   managementReportSubscriptionRecharge$({ args }, authToken){
-    console.log({...args});
+    console.log( "managementReportSubscriptionRecharge", {...args});
     const { businessId } = authToken;
     const {  type, timestampType, initDate, endDate } = args;
 

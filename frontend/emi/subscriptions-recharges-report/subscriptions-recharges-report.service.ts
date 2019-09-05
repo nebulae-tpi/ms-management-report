@@ -4,6 +4,7 @@ import  { of } from 'rxjs';
 import { GatewayService } from '../../../api/gateway.service';
 import {
   getHelloWorld,
+  managementReportSubscriptionRecharge,
   ManagementReportHelloWorldSubscription
 } from './gql/subscriptionsRechargesReport';
 
@@ -14,13 +15,14 @@ export class SubscriptionsRechargesReportService {
   /**
    * Hello World sample, please remove
    */
-  getReportByDays$(type, dateInit, dateEnd) {
+  getReportByDays$(type, timestampType='DAY', initDate, endDate) {
     // return this.gateway.apollo
-    //   .watchQuery<any>({
-    //     query: getHelloWorld,
+    //   .query<any>({
+    //     query: managementReportSubscriptionRecharge,
+    //     variables: { type, timestampType, initDate, endDate },
     //     fetchPolicy: "network-only"
     //   })
-    //   .valueChanges.map(resp => resp.data.getHelloWorldFromManagementReport.sn);
+      // map(resp => resp.data.getHelloWorldFromManagementReport.sn);
 
     const millisOnDay = 1000 * 60 * 24;
     const firstDate = Date.now() - ( millisOnDay * 32 );
