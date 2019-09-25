@@ -1,0 +1,26 @@
+<h1 mat-dialog-title> </h1>
+<mat-dialog-content>
+
+  <form [formGroup]="dateFiltersForm">
+
+    <mat-form-field>
+      <input matInput [matDatepicker]="pickerInitDate" autocomplete="off" placeholder="Fecha Inicial"
+        formControlName="initTimestamp" [min]="minInitDate" [max]="maxInitDate" (dateChange)="onInitDateChange()" />
+      <mat-datepicker-toggle matSuffix [for]="pickerInitDate"></mat-datepicker-toggle>
+      <mat-datepicker #pickerInitDate></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput [matDatepicker]="pickerEndDate" placeholder="Fecha Final" formControlName="endTimestamp"
+        [min]="minEndDate" [max]="maxEndDate" (dateChange)="onEndDateChange()" />
+      <mat-datepicker-toggle matSuffix [for]="pickerEndDate"></mat-datepicker-toggle>
+      <mat-datepicker #pickerEndDate></mat-datepicker>
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-raised-button (click)="closeButton(true)">Ok</button>
+  <button mat-raised-button mat-dialog-close color="warn" (click)="closeButton(false)">Cancelar</button>
+</mat-dialog-actions>

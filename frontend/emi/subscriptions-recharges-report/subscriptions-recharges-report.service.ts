@@ -32,7 +32,7 @@ export class SubscriptionsRechargesReportService {
         timestamp: firstDate + ( millisOnDay * index ),
         date: new Date(firstDate + ( millisOnDay * index )).toDateString(),
         amountValue: Math.floor(Math.random() * 100 ) * 1000,
-        days: Math.floor(Math.random() * 100 )
+        days: Math.floor(Math.random() * 100 ),
         })
       );
     

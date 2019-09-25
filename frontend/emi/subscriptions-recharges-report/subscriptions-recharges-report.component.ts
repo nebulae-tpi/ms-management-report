@@ -1,15 +1,18 @@
 import { SubscriptionsRechargesReportService } from './subscriptions-recharges-report.service';
+import { DateSelectorDialogComponent } from './dialogs/date-selector-dialog/date-selector-dialog.component';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { fuseAnimations } from '../../../core/animations';
 import { Subscription } from 'rxjs/Subscription';
 import * as Rx from 'rxjs/Rx';
 import { Subject } from 'rxjs/Rx';
-import { tap, map, mergeMap, filter } from 'rxjs/operators';
+import { tap, map, mergeMap, filter, startWith } from 'rxjs/operators';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import * as moment from 'moment';
-import { of } from 'rxjs';
+import { of, combineLatest, BehaviorSubject } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { WeekSelectorDialogComponent } from './dialogs/week-selector-dialog/week-selector-dialog.component';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -22,8 +25,9 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
 
   // Subject to unsubscribe
   private ngUnsubscribe = new Subject();
+  private daysFilters$ = new BehaviorSubject(null);
+  private weekFilters$ = new BehaviorSubject(null);
   totalAmount = 0;
-  dateFiltersForm: FormGroup;
   secondaryFilterForm: FormGroup;
 
   minInitDate;
@@ -41,14 +45,27 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
     legend: {
       display: false
     },
+    scales: {
+      xAxes: [{
+        gridLines: {
+          color: "rgba(0, 0, 0, 0)",
+        },
+      }],
+      /*yAxes: [{
+        gridLines: {
+          color: "rgba(0, 0, 0, 0)",
+        },
+      }],*/
+    },
     tooltips: {
+      displayColors: false,
       mode: 'single',
       callbacks: {
         title: function (tooltipItem, data) {
           return 'Día ' + data.labels[tooltipItem[0].index];
         },
         label: function (tooltipItems, data) {
-          return 'Total: $' + tooltipItems.yLabel;
+          return 'Total: $' + new Intl.NumberFormat(["ban", "id"]).format(tooltipItems.yLabel);
         },
         footer: function (tooltipItem, data) {
           return '';
@@ -63,19 +80,29 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
   barChartType = 'bar';
   barChartLegend = true;
   barChartData = [
-    { data: [65, 59, 50, 80, 81, 56, 55, 40, 0 ], label: 'mes' }
+    { 
+      data: [65.50, 59, 50, 80, 81, 56, 55, 40, 0 ], 
+      label: 'mes'
+    }
   ];
 
-  barChartColors = [
-    { backgroundColor: '#00000' },
+  barChartColors =  [
+    { 
+      hoverBackgroundColor: '#1d9dd3',
+      backgroundColor:'silver',
+     },
   ];
 
-
-
+  // MatPaginator Inputs
+  length = 100;
+  pageSize = 10;
+  pageSizeOptions: number[] = [5, 10, 25, 100];
+ 
   constructor(
     private subscriptionsRechargesReportService: SubscriptionsRechargesReportService,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
+    public dialog: MatDialog,
     ) {
 
   }
@@ -85,71 +112,52 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
 
     this.initForms();
 
-    this.listenDateFilters();
-    this.listenSecondaryFilters();
+    this.listenAllFilters();
     this.updateData(null, null, null);
 
 
   }
 
   initForms(){
-    this.minInitDate = moment('2019-01-01').startOf('month');
-    this.maxInitDate = moment().add(1, 'months').endOf('day');
-
-    const startOfMonth = moment().startOf('month');
-    const initTimeStampValue = moment().subtract(1, 'day').startOf('day');
-    const endOfMonth = moment().endOf('day');
-    this.minEndDate = startOfMonth;
-    this.maxEndDate = endOfMonth;
-
-    this.dateFiltersForm = new FormGroup({
-      initTimestamp: new FormControl(initTimeStampValue, [Validators.required]),
-      endTimestamp: new FormControl(endOfMonth, [Validators.required]),
-    });
 
     this.secondaryFilterForm = new FormGroup({
-      type: new FormControl('SUBSCRIPTION_PAYMENT'),
-      month: new FormControl(null),
-      week: new FormControl(null)
+      type: new FormControl('SUBSCRIPTION_PAYMENT')
     });
   }
 
-  listenDateFilters(){
-    this.dateFiltersForm.valueChanges
-    .pipe(
-      tap(filtersValue => console.log('FILTRO DE DIAS ==> ', filtersValue)),
-      map( filtersValue => ({
-        initTimestamp: filtersValue.initTimestamp.valueOf(),
-        endTimestamp: filtersValue.endTimestamp.valueOf(),
-        })
-      )
-    ).subscribe(
-      (filters => {
-        const { initTimestamp, endTimestamp} = filters;
-        this.updateData('', initTimestamp, endTimestamp);
-      })
-    );
-  }
 
-  onInitDateChange(){
+  listenAllFilters(){
 
-  }
+    combineLatest(
+      this.secondaryFilterForm.valueChanges.pipe(
+        startWith(this.secondaryFilterForm.get('type').value)
+      ),
+      this.daysFilters$,
+      this.weekFilters$
+    ).pipe(
+      mergeMap(([paymentOrRecharge, daysFilters, weekFilters]) => {
+        
+        const initTimestamp = 0;
+        const endTimestamp = 0;
 
-  onEndDateChange(){
-
-  }
+        console.log({ daysFilters, weekFilters })
 
 
-  listenSecondaryFilters(){
-    this.secondaryFilterForm.valueChanges
-    .pipe(
+        const filters = {
+          type: paymentOrRecharge,
+          initTimestamp,
+          endTimestamp          
+        }
+
+        return of(filters);
+
+      }),
       tap(filtersValue => console.log('FILTROS SECUNDARIOS ==> ', filtersValue))
-    ).subscribe();
 
-  }
+    ).subscribe()
 
-  listenFilterChanges(){
-    
+
+
   }
 
   updateData(type, dateInit, dateEnd){
@@ -167,15 +175,37 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
           result.forEach((v, i) => {
             this.barChartLabels.push(v.date);
             this.barChartData[0].data.push(v.amountValue);
-            this.totalAmount = this.totalAmount + v.amountValue;
+            //console.log(new Intl.NumberFormat('ban', { style: 'currency', currency: 'USD' }).format(v.amountValue).toString());
+            this.totalAmount = this.totalAmount + v.amountValue
           });
 
         })
       ).subscribe();
   }
-  printData(){
-    console.log('printing data');
+
+
+  openDateSelectorDialog(): void {
+    const dialogRef = this.dialog.open(DateSelectorDialogComponent, {
+      width: '250px'
+    });
+
+    dialogRef.afterClosed() 
+    .subscribe(result => {
+      console.log('The dialog was closed', result);
+      this.daysFilters$.next(result)
+    });
   }
+
+  openWeekSelectorDialog(): void {
+    const dialogRef = this.dialog.open(WeekSelectorDialogComponent, {
+      width: '250px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed', result);
+    });
+  }
+
 
   graphQlAlarmsErrorHandler$(response) {
     return of(JSON.parse(JSON.stringify(response))).pipe(

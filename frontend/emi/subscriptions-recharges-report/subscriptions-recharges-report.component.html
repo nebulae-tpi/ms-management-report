@@ -1,36 +1,10 @@
 <div id="sample" class="page-layout carded left-sidenav" fusePerfectScrollbar>
 
   <div class="caja-sample" flexLayout="column">
-    
+
     <div class="filterk">
-      <div class="titulo1">Filtros Días</div>
-
-      <form [formGroup]="dateFiltersForm">
-
-        <mat-form-field>
-          <input matInput [matDatepicker]="pickerInitDate" placeholder="Fecha Inicial"
-            formControlName="initTimestamp" [min]="minInitDate" [max]="maxInitDate" (dateChange)="onInitDateChange()"/>
-          <mat-datepicker-toggle matSuffix [for]="pickerInitDate"></mat-datepicker-toggle>
-          <mat-datepicker #pickerInitDate></mat-datepicker>
-        </mat-form-field>
-
-        <mat-form-field>
-          <input matInput [matDatepicker]="pickerEndDate" placeholder="Fecha Final"
-            formControlName="endTimestamp" [min]="minEndDate" [max]="maxEndDate" (dateChange)="onEndDateChange()"/>
-          <mat-datepicker-toggle matSuffix [for]="pickerEndDate"></mat-datepicker-toggle>
-          <mat-datepicker #pickerEndDate></mat-datepicker>
-        </mat-form-field>
-
-      </form>
-    </div>
-
-
-
-    <div class="grafica-selector">
-
       <div class="cabe">
-        <div class="titulo2">Información detallada</div>
-
+        <!--filtro por dias-->
         <div class="selec" [formGroup]="secondaryFilterForm">
           <div class="pag-rec">
             <mat-form-field>
@@ -41,41 +15,197 @@
               </mat-select>
             </mat-form-field>
           </div>
-
-          <div class="mess">
-            <mat-form-field>
-              <mat-label>2: Meses disponibles</mat-label>
-              <mat-select formControlName="month">
-                <mat-option *ngFor="let month of monthOptions" value="{{ month }}"> {{month }} </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-
-          <div class="semm">
-            <mat-form-field>
-              <mat-label>3: Semanas disponibles</mat-label>
-              <mat-select formControlName="week">
-                <mat-option *ngFor="let week of weekOptions" value="{{ week }}">{{ 'Semana ' + week }}</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
         </div>
+
+        <div class="formD">
+
+
+
+          <button mat-raised-button (click)="openDateSelectorDialog()">Selecciona los días</button>
+          <button mat-raised-button (click)="openWeekSelectorDialog()">Selecciona el mes</button>
+
+        </div>
+
+        <!--filtros por mes-->
+
       </div>
+
+    </div>
+
+
+
+    <div class="informacion">
 
       <div class="cuer">
-        <div class="sample-grafi" style="display: block">
-          <canvas baseChart chart-click="onClick" [datasets]="barChartData" [labels]="barChartLabels"
-            [options]="barChartOptions" [legend]="barChartLegend" [chartType]="barChartType" (chartClick)="printData()">
-          </canvas>
+        <!--fecha seleccionada-->
+        <div class="title">
+          Mayo 05 2019
+        </div>
+        <!--informacion por días-->
+        <div class="info">
+          <div class="infoDias">
+
+            <p>
+              Información por días
+            </p>
+            <div class="tabla1">
+              <table class="simple">
+                <thead>
+                  <tr>
+                    <th>Día</th>
+                    <th>Total días</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <p>Día</p>
+                      10/20/19
+                    </td>
+                    <td>
+                      <p>Total días</p>
+                      120
+                    </td>
+                    <td>
+                      <p>Total</p>
+                      $150.000
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td>
+                      <p>Día</p>
+                      10/20/19
+                    </td>
+                    <td>
+                      <p>Total días</p>
+                      120
+                    </td>
+                    <td>
+                      <p>Total</p>
+                      $150.000
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td>
+                      <p>Día</p>
+                      10/20/19
+                    </td>
+                    <td>
+                      <p>Total días</p>
+                      120
+                    </td>
+                    <td>
+                      <p>Total</p>
+                      $150.000
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td>
+                      <p>Día</p>
+                      10/20/19
+                    </td>
+                    <td>
+                      <p>Total días</p>
+                      120
+                    </td>
+                    <td>
+                      <p>Total</p>
+                      $150.000
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <mat-paginator [length]="length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions">
+              </mat-paginator>
+            </div>
+          </div>
+
+          <!--informacion de los totales tanto de 
+            los días como el dinero conseguido-->
+          <div class="totl">
+            <p>
+              Totales
+            </p>
+            <div class="tabla1">
+              <table class="simple">
+                <thead>
+                  <tr>
+                    <th>total días</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <p>Total días</p>
+                      350
+                    </td>
+                    <td>
+                      <p>Total</p>
+                      ${{ totalAmount | number }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+
+
+        </div>
+
+        <div class="gafri">
+          <!--grafica de los días seleccionados-->
+          <p>
+            Represetación días seleccionados
+          </p>
+          <div class="sample-grafi" style="display: block">
+            <canvas baseChart id="grafi1" chart-click="onClick" [datasets]="barChartData" [labels]="barChartLabels"
+              [colors]="barChartColors" [options]="barChartOptions" [legend]="barChartLegend" [chartType]="barChartType"
+              (chartClick)="printData()" #grafi1>
+            </canvas>
+          </div>
+
+          <!--las personas que vendieron en estos días y 
+            cuanto en los días como en el valor total-->
+          <p>Personas</p>
+          <div class="personas">
+            <div class="per1">
+              <div class="nombre">
+                Mauricio
+              </div>
+              <div class="ven">
+                <p>100</p>
+                $500.000
+              </div>
+            </div>
+            <div class="per1">
+              <div class="nombre">
+                Mauricio
+              </div>
+              <div class="ven">
+                <p>100</p>
+                $500.000
+              </div>
+            </div>
+            <div class="per1">
+              <div class="nombre">
+                Mauricio
+              </div>
+              <div class="ven">
+                <p>100</p>
+                $500.000
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
-
-      <div class="totalp">
-          <div class="pare">
-            <div class="pre2">Total: ${{ totalAmount  }}</div>
-          </div>
-      </div>
-
 
     </div>
 

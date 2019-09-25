@@ -1,196 +1,290 @@
 @import "src/app/core/scss/fuse";
 
+#sample{
+    background: #e9eff4;
+}
+
 .caja-sample{
-    width: 100%;
-    padding: 0 20px;
-    display: flex;
-
     .filterk{
-        width: 20%;
-        padding: 15px;
-        box-shadow: 2px 4px 5px 1px #00000014;
-
-        .titulo1{
-            font-size: 1.8vw;
-            background-color: #c0c0c026;
-            padding: 5px;
-            text-align: center;
-            color: black;
-            margin-bottom: 15px;
-        }
-
-        form .mat-form-field{
+        .cabe{
             width: 100%;
-        }
-    }
+            display: flex;
+            padding: 10px 10px 0 10px;
+            justify-content: flex-end;
 
-    .grafica-selector{
-        width: 80%;
-        padding: 15px 15px 0 0;
-
-        .selec > div{
-            width: 33.33%;
-            padding: 0 20px;
-
-            .mat-form-field{
-                width: 100%;
-            }
-        }
-    }
-
-    .selec{
-        display: flex;
-        justify-content: space-around;
-    }
-
-    .titulo2{
-        font-size: 1.8vw;
-        background-color: #c0c0c026;
-        padding: 5px;
-        text-align: center;
-        color: black;
-        margin-bottom: 15px;
-    }
-}
-
-.sample-grafi canvas{
-    padding: 0 0 0 15px;
-    width: 100%;
-}
-
-.pare{
-    display: flex;
-    justify-content: flex-end;
-    padding: 0 15px 10px;
-
-    .pre2{
-        padding: 10px;
-        background: #f2f2f2;
-        color: black;
-        border-bottom: 1px solid;
-    }
-}
-
-
-@media(max-width: 1024px){
-    .caja-sample{
-        padding: 0 20px 0 0;
-
-        .filterk{
-            width: 25%;
-
-            form .mat-form-field{
-                width: 100%;
-            }
-
-            form .mat-form-field input{
-                font-size: 11px;
-            }
-        }
-
-        .grafica-selector{
-            width: 75%;
-        }
-    }
-    
-}
-
-@media(max-width: 780px){
-    .caja-sample{
-        padding: 0 15px;
-        flex-wrap: wrap;
-
-        .filterk{
-            width: 100%;
-            order: 2;
-            box-shadow: none;
-            padding: 0 15px;
-
-            .titulo1{
-                font-size: 15px;
-                margin-bottom: 5px;
+            .formD button{
+                margin: 0 5px;
             }
 
             form{
-                display: flex;
-                justify-content: flex-end;
-
-                .mat-form-field{
-                    width: 50%;
-                    padding: 0 20px;
-                }
-            }
-        }
-
-        .grafica-selector{
-            width: 100%;
-            padding: 15px 0;
-        }
-
-        .titulo2{
-            font-size: 15px;
-            margin-bottom: 5px;
-        }
-    }
-
-    .sample-grafi canvas{
-        padding: 0;
-    }
-
-    .pare{
-        padding: 0 15px 0px;
-    }
-    
-}
-
-@media(max-width: 585px){
-    .caja-sample{
-
-        .grafica-selector{
-            padding: 15px 0;
-            
-            .selec{
-                flex-wrap: wrap;
-                justify-content: flex-start;
-            }
-            
-            .selec > div{
-                width: 50%;
-            }
-            
-        }
-    }
-    
-}
-
-@media(max-width: 425px){
-    .caja-sample{
-
-        .filterk {
-
-            form {
-
-                .mat-form-field{
+                mat-form-field{
                     padding: 0 10px;
+                    color: #4e4e4e;
+                    width: 50%;
+                }
+
+                ::ng-deep .mat-focused .mat-form-field-label {
+                    /*change color of label*/
+                    color: #1d9dd3 !important;
+                }
+
+                ::ng-deep .mat-form-field-invalid .mat-input-element{
+                    color: #FF3E31 !important;
+                    caret-color: #FF3E31 !important;
+                }
+                   
+                ::ng-deep.mat-form-field-underline {
+                    /*change color of underline*/
+                    background-color: #4e4e4e !important;
+                } 
+                   
+                ::ng-deep.mat-form-field-ripple {
+                    /*change color of underline when focused*/
+                    background-color: #1d9dd3 !important;
+                }
+                   
+                ::ng-deep .mat-form-field-label {
+                    /*change color of label*/
+                    color: #4e4e4e !important;
                 }
                 
+                mat-datepicker-toggle {
+                    color: #1d9dd3 !important;
+                }
             }
-            
-        }
 
-        .grafica-selector{
-            padding: 15px 0;
-            
             .selec{
-                flex-wrap: wrap;
-                justify-content: flex-start;
+                display: flex;
+
+                div{
+                    width: 33.33%;
+
+                    mat-form-field{
+                        padding: 0 10px;
+                        color: #4e4e4e;
+                    }
+
+                    ::ng-deep .mat-focused .mat-form-field-label {
+                        /*change color of label*/
+                        color: #1d9dd3 !important;
+                    }
+                       
+                    ::ng-deep.mat-form-field-underline {
+                        /*change color of underline*/
+                        background-color: #4e4e4e !important;
+                    } 
+                       
+                    ::ng-deep.mat-form-field-ripple {
+                        /*change color of underline when focused*/
+                        background-color: #1d9dd3 !important;
+                    }
+                       
+                    ::ng-deep .mat-form-field-label {
+                        /*change color of label*/
+                        color: #4e4e4e !important;
+                    }
+                }
             }
-            
-            .selec > div{
-                width: 100%;
-            }
-            
         }
     }
+
+    .cuer{
+        padding: 0 20px 20px 20px;
+        display: flex;
+        flex-wrap: wrap;
+
+        .title{
+            width: 100%;
+            font-size: 25px;
+            margin: 10px 0px;
+        }
+
+        .info, .gafri{
+            width: 50%;
+            padding: 0 10px;
+        }
+
+        .tabla1, .sample-grafi{
+            background: white;
+            padding: 10px;
+        }
+
+        .personas{
+            display: flex;
+            justify-content: space-evenly;
+            background: white;
+            padding: 10px;
+
+            .per1{
+                padding: 0 10px;
+                text-align: center;
+                border-right: 1px solid #ddd;
+                width: 33.33%;
+
+                .nombre{
+                    font-size: 12px;
+                }
+
+                .ven{
+                    font-size: 19px;
+
+                    p{
+                        margin: 0;
+                        font-size: 17px;
+                    }
+                }
+            }
+
+            .per1:last-child{
+                border-right: 0;
+            }
+        }
+    }
+}
+
+table.simple thead tr th{
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+table.simple tbody tr td{
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+table {
+    border-collapse: collapse;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    table-layout: fixed;
+}
+  
+table caption {
+    font-size: 1.5em;
+    margin: .5em 0 .75em;
+}
+  
+table tr {
+    padding: .35em;
+}
+ 
+table th,
+table td {
+    padding: .625em;
+}
+  
+table th {
+    font-size: .85em;
+}
+
+table td p{
+    display: none;
+}
+
+@media (max-width: 800px){
+    .caja-sample{
+        .cuer{
+            .info, .gafri{
+                width: 100%;
+            }
+
+            .personas{
+                flex-wrap: wrap;
+                justify-content: flex-start;
+
+                .per1{
+                    border: 0;
+                    width: 50%;
+                    margin-bottom: 5px;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 620px){
+    table.simple thead tr th{
+        padding: 5px 2px;
+    }
     
+    table.simple tbody tr td{
+        padding: 5px 2px;
+    }
+
+    table {
+        border: 0;
+    }
+    
+    table caption {
+        font-size: 1.3em;
+    }
+      
+    table thead {
+        border: none;
+        clip: rect(0 0 0 0);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+    }
+      
+    table tr {
+        border: 0px;
+        display: flex;
+        margin-bottom: .625em;
+        flex-wrap: wrap;
+    }
+      
+    table td {
+        border-bottom: 1px solid #ddd !important;
+        display: block;
+        font-size: .8em;
+        text-align: right;
+        width: 100%;
+        display: flex;
+        align-items: center;
+    }
+      
+    table td p{
+        position: relative;
+        display: inline-block;
+        text-align: left;
+        width: 50%;
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.54);
+        margin: 0;
+    }
+
+    table td span{
+        width: 50%;
+        position: relative;
+        display: inline-block;
+    }
+}
+
+@media (max-width: 375px){
+    .caja-sample{
+        .filterk{
+            .cabe{
+                .formD button{
+                    font-size: 11px;
+                }
+            }
+        }
+        .cuer{
+            .info, .gafri{
+                padding: 0;
+            }
+            .personas{
+                .per1{
+                    width: 100%;
+                    margin-bottom: 5px;
+                    border-bottom: 1px solid #ddd;
+                }
+            }
+        }
+    }
 }
