@@ -38,7 +38,7 @@ class ManagementDashboardCQRS {
     // const {  } = Crosscutting.decomposeTime(endDate);
 
 
-    return ManagementDashboardDA.getBusinessSummaryReport$(businessId, timestampType, initDate, endDate)
+    return ManagementDashboardDA.getBusinessSummaryReport$('75cafa6d-0f27-44be-aa27-c2c82807742d', timestampType, initDate, endDate)
     .pipe(
       
       mergeMap(result => from(result)
