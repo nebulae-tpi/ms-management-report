@@ -45,7 +45,10 @@ spec:
           value: management-report
         # JWT CONGIF        
         - name: JWT_PUBLIC_KEY
-          value: -----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmT7jpEKtVzF5DyW84AsmourNR+4vTo1CmCNg9nppFHL5ABHbrtH02ZSxnRg9HSXV3hyU1r2paqTYWCpzxQPxd7p4gc/ZOAMjczqv+RQgKXrZugFFG4DthVyreGiT20jx3jmpXm0PT/d4/B6Ju93MoiAI1gxd45fr0CbWJrbIyF4ARWc8pgNhuDYFu023pA51TZD4ib6MbzV3Cvt6OX8XBErlRxd/rGbMNW0Zt0hL8CkLQRBn+L8pmvpYt+7Ic49QDRbYvqe9Y8B6PIBLrqBqw/u35MzaQvnpfI26dmCVuXnjjX9VOBaIXMNeel6meSxRDxdcibWLZD8rWe5d7XB1mwIDAQAB\n-----END PUBLIC KEY-----
+          valueFrom:
+            configMapKeyRef:
+              name: keycloak-jwt-public-key
+              key: jwt_public_key
         # API - EMI-GATEWAY CONFIG
         - name: EMI-GATEWAY_REPLIES_TOPIC_SUBSCRIPTION
           value: emi-gateway-replies-topic-mbe-management-report
