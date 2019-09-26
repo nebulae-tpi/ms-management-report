@@ -13,12 +13,12 @@ export class SubscriptionsRechargesReportService {
   /**
    * Hello World sample, please remove
    */
-  getReportByDays$(type, timestampType = 'DAY', initDate, endDate) {
+  getReportByDays$(businessId, type, timestampType = 'DAY', initDate, endDate) {
     
     return this.gateway.apollo
       .query<any>({
         query: managementReportSubscriptionRecharge,
-        variables: { type, timestampType, initDate, endDate },
+        variables: { businessId, type, timestampType, initDate, endDate },
         fetchPolicy: 'network-only'
       });
   }

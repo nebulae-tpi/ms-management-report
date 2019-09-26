@@ -13,6 +13,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { WeekSelectorDialogComponent } from './dialogs/week-selector-dialog/week-selector-dialog.component';
+import { ToolbarService } from '../../toolbar/toolbar.service';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -105,12 +106,14 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
   totalDays = 0;
 
   currentDate = '';
+  selectedBusinessId = null;
 
   constructor(
     private subscriptionsRechargesReportService: SubscriptionsRechargesReportService,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
     public dialog: MatDialog,
+    private toolbarService: ToolbarService
   ) {
 
   }
@@ -126,6 +129,7 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
     const endDate = moment();
     this.updateData(null, initDate.valueOf(), endDate.valueOf());
     this.listenTypeFilterChanges();
+    this.listenBusinessUnitChanges();
 
 
   }
@@ -136,6 +140,14 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
     });
   }
 
+
+  listenBusinessUnitChanges(){
+    this.toolbarService.onSelectedBusiness$
+    .pipe(
+      filter((bs: any) => bs),
+      tap(business =>  this.selectedBusinessId = business.id )
+    ).subscribe();
+  }
 
   listenAllFilters() {
 
@@ -203,7 +215,7 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
 
 
   updateData(type, dateInit, dateEnd) {
-    this.subscriptionsRechargesReportService.getReportByDays$(type, 'DAY', dateInit, dateEnd)
+    this.subscriptionsRechargesReportService.getReportByDays$(this.selectedBusinessId, type, 'DAY', dateInit, dateEnd)
       .pipe(
         map((result: any) => (result.data || {}).managementReportSubscriptionRecharge || []),
         map(rawResponse => JSON.parse(JSON.stringify(rawResponse)))
