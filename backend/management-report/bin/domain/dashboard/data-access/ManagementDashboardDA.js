@@ -48,25 +48,10 @@ class ManagementDashboardDA {
     );
   }
 
-  static getReportByDay$(businessId, timestampType, initDateParsed, endDateParsed){
+  static getBusinessSummaryReport$(businessId, timestampType, initDate, endDate){
     const collection = mongoDB.db.collection(COLLECTION_NAME);
-    const query = { businessId, timestampType: timestampType};
-    switch (timestampType) {
-      case 'DAY':
-        query.DAY_OF_YEAR = { $gte: initDateParsed.dayOfYear , $lte: endDateParsed.dayOfYear }  
-        break;
-      case 'WEEK':
-          query.WEEK = { $gte: initDateParsed.week , $lte: endDateParsed.week }
-          break;
-      case 'MONTH':
-        query.MONTH = { $gte: initDateParsed.month , $lte: endDateParsed.month }
-        break;
-    
-      default:
-        break;
-    }
-
-    return defer(() => collection.find(query).toArray())
+    const query = { businessId, timestampType: timestampType, timestamp: { $gte: initDate, $lte: endDate } };
+    return defer(() => collection.find(query, {projection: {pos:1,timestamp:1}}).sort({timestamp:1}).toArray())
   }
 
   

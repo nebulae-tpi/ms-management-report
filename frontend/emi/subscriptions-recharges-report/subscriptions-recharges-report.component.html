@@ -18,12 +18,8 @@
         </div>
 
         <div class="formD">
-
-
-
           <button mat-raised-button (click)="openDateSelectorDialog()">Selecciona los días</button>
           <button mat-raised-button (click)="openWeekSelectorDialog()">Selecciona el mes</button>
-
         </div>
 
         <!--filtros por mes-->
@@ -32,14 +28,12 @@
 
     </div>
 
-
-
     <div class="informacion">
 
       <div class="cuer">
         <!--fecha seleccionada-->
         <div class="title">
-          Mayo 05 2019
+          {{ currentDate }}
         </div>
         <!--informacion por días-->
         <div class="info">
@@ -58,52 +52,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>
-                      <p>Día</p>
-                      10/20/19
-                    </td>
-                    <td>
-                      <p>Total días</p>
-                      120
-                    </td>
-                    <td>
-                      <p>Total</p>
-                      $150.000
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>
-                      <p>Día</p>
-                      10/20/19
-                    </td>
-                    <td>
-                      <p>Total días</p>
-                      120
-                    </td>
-                    <td>
-                      <p>Total</p>
-                      $150.000
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>
-                      <p>Día</p>
-                      10/20/19
-                    </td>
-                    <td>
-                      <p>Total días</p>
-                      120
-                    </td>
-                    <td>
-                      <p>Total</p>
-                      $150.000
-                    </td>
-                  </tr>
-
-                  <tr>
+                  <tr *ngFor="let daySummaryItem of [1, 2, 3]" >
                     <td>
                       <p>Día</p>
                       10/20/19
@@ -125,7 +74,7 @@
             </div>
           </div>
 
-          <!--informacion de los totales tanto de 
+          <!--informacion de los totales tanto de
             los días como el dinero conseguido-->
           <div class="totl">
             <p>
@@ -143,7 +92,7 @@
                   <tr>
                     <td>
                       <p>Total días</p>
-                      350
+                      {{ totalDays }}
                     </td>
                     <td>
                       <p>Total</p>
@@ -167,39 +116,21 @@
           <div class="sample-grafi" style="display: block">
             <canvas baseChart id="grafi1" chart-click="onClick" [datasets]="barChartData" [labels]="barChartLabels"
               [colors]="barChartColors" [options]="barChartOptions" [legend]="barChartLegend" [chartType]="barChartType"
-              (chartClick)="printData()" #grafi1>
+              #grafi1>
             </canvas>
           </div>
 
-          <!--las personas que vendieron en estos días y 
+          <!--las personas que vendieron en estos días y
             cuanto en los días como en el valor total-->
           <p>Personas</p>
           <div class="personas">
-            <div class="per1">
+            <div *ngFor="let user of usersSummary" class="per1">
               <div class="nombre">
-                Mauricio
+                {{user.username}}
               </div>
               <div class="ven">
-                <p>100</p>
-                $500.000
-              </div>
-            </div>
-            <div class="per1">
-              <div class="nombre">
-                Mauricio
-              </div>
-              <div class="ven">
-                <p>100</p>
-                $500.000
-              </div>
-            </div>
-            <div class="per1">
-              <div class="nombre">
-                Mauricio
-              </div>
-              <div class="ven">
-                <p>100</p>
-                $500.000
+                <p>{{ user.count }}</p>
+                <span>${{user.value}}</span>
               </div>
             </div>
           </div>
@@ -208,10 +139,5 @@
       </div>
 
     </div>
-
-
-
   </div>
-
-
 </div>

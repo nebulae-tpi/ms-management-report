@@ -4,13 +4,24 @@ type HelloWorldManagementReport{
   sn: String!  
 }
 
+type ManagementReportSummaryUser {
+  username: String
+  count: Int,
+  days: Int
+  value: Int
+}
+
 type ManagementReportSummary{
   timestampType: String
   timestamp: BigInt
+  type: String
   count: Int
   amountValue: Int
-  days: Int
+  days: Int,
+  users: [ManagementReportSummaryUser]
 }
+
+
 
 type Query {
   "Hello world sample, please remove"
@@ -19,8 +30,8 @@ type Query {
   managementReportSubscriptionRecharge(
     type: String,
     timestampType: String,
-    initDate: BigInt,
-    endDate: BigInt
+    initDate: BigInt!,
+    endDate: BigInt!
   ): [ManagementReportSummary]
 }
 

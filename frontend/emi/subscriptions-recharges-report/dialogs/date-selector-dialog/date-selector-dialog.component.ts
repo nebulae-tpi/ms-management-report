@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject} from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { SubscriptionsRechargesReportService } from '../../subscriptions-recharges-report.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -16,8 +16,7 @@ export class DateSelectorDialogComponent implements OnInit {
 
   constructor(
     private subscriptionsRechargesReportService: SubscriptionsRechargesReportService,
-    private dialogRef: MatDialogRef<DateSelectorDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any)
-    {
+    private dialogRef: MatDialogRef<DateSelectorDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
 
   }
 
@@ -34,7 +33,7 @@ export class DateSelectorDialogComponent implements OnInit {
     this.initForms();
   }
 
-  initForms(){
+  initForms() {
     this.minInitDate = moment('2019-01-01').startOf('month');
     this.maxInitDate = moment().add(1, 'months').endOf('day');
 
@@ -45,45 +44,50 @@ export class DateSelectorDialogComponent implements OnInit {
     this.maxEndDate = endOfMonth;
 
     this.dateFiltersForm = new FormGroup({
-      initTimestamp: new FormControl(),
-      endTimestamp: new FormControl(),
+      initTimestamp: new FormControl(moment().startOf('week')),
+      endTimestamp: new FormControl(moment().endOf('day')),
     });
   }
 
-  listenDateFilters(){
+  listenDateFilters() {
     this.dateFiltersForm.valueChanges
-    .pipe(
-      tap(filtersValue => console.log('FILTRO DE DIAS ==> ', filtersValue)),
-      map( filtersValue => ({
-        initTimestamp: filtersValue.initTimestamp.valueOf(),
-        endTimestamp: filtersValue.endTimestamp.valueOf(),
+      .pipe(
+        tap(filtersValue => console.log('FILTRO DE DIAS ==> ', filtersValue)),
+        map(filtersValue => ({
+          initTimestamp: filtersValue.initTimestamp.valueOf(),
+          endTimestamp: filtersValue.endTimestamp.valueOf(),
         })
-      )
-    ).subscribe(
-      (filters => {
-        const { initTimestamp, endTimestamp} = filters;
-        this.updateData('', initTimestamp, endTimestamp);
-      })
-    );
+        )
+      ).subscribe(
+        (filters => {
+          const { initTimestamp, endTimestamp } = filters;
+          this.updateData('', initTimestamp, endTimestamp);
+        })
+      );
   }
 
-  updateData(type, dateInit, dateEnd){
-    this.subscriptionsRechargesReportService.getReportByDays$(type, 'DAY',  dateInit, dateEnd)
+  updateData(type, dateInit, dateEnd) {
+    this.subscriptionsRechargesReportService.getReportByDays$(type, 'DAY', dateInit, dateEnd)
   }
 
-  onInitDateChange(){
+  onInitDateChange() {
     console.log("La fecha inicial ha cambiado");
-    
   }
-  onEndDateChange(){
+  onEndDateChange() {
     console.log("La fecha final ha cambiado");
   }
 
   closeButton(okButton: Boolean) {
 
-    const answer =  okButton ? this.dateFiltersForm.getRawValue() : undefined;
+    const { initTimestamp, endTimestamp } = this.dateFiltersForm.getRawValue();
 
-    this.updateData;
+    const answer = okButton
+      ? {
+          initDate: initTimestamp ? initTimestamp.valueOf() : moment().startOf('week').valueOf(),
+          endDate: endTimestamp ? endTimestamp.valueOf() : moment().endOf('week').valueOf()
+        }
+      : undefined;
+
     this.dialogRef.close(answer);
   }
 

@@ -7,7 +7,7 @@
       <mat-form-field>
         <mat-label>1: Años</mat-label>
         <mat-select formControlName="year">
-          <mat-option value="{{ year }}">{{ year }}</mat-option>
+          <mat-option *ngFor="let year of yearOptions" value="{{ year }}">{{ year }}</mat-option>
         </mat-select>
       </mat-form-field>
     </div>
@@ -16,7 +16,7 @@
       <mat-form-field>
         <mat-label>2: Meses disponibles</mat-label>
         <mat-select formControlName="month">
-          <mat-option *ngFor="let month of monthOptions" value="{{ month }}"> {{month }} </mat-option>
+          <mat-option *ngFor="let month of monthOptions" value="{{ month }}"> {{ month }} </mat-option>
         </mat-select>
       </mat-form-field>
     </div>

@@ -13,6 +13,9 @@ import { tap, map, mergeMap, filter } from 'rxjs/operators';
   styleUrls: ['./week-selector-dialog.component.scss']
 })
 export class WeekSelectorDialogComponent implements OnInit {
+  yearOptions = [];
+  monthOptions = [];
+  weekOptions = [];
 
   constructor(
     private subscriptionsRechargesReportService: SubscriptionsRechargesReportService,

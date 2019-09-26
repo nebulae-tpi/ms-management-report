@@ -5,7 +5,7 @@ import { fuseAnimations } from '../../../core/animations';
 import { Subscription } from 'rxjs/Subscription';
 import * as Rx from 'rxjs/Rx';
 import { Subject } from 'rxjs/Rx';
-import { tap, map, mergeMap, filter, startWith } from 'rxjs/operators';
+import { tap, map, mergeMap, filter, startWith, takeUntil } from 'rxjs/operators';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import * as moment from 'moment';
 import { of, combineLatest, BehaviorSubject } from 'rxjs';
@@ -48,7 +48,7 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
     scales: {
       xAxes: [{
         gridLines: {
-          color: "rgba(0, 0, 0, 0)",
+          color: 'rgba(0, 0, 0, 0)',
         },
       }],
       /*yAxes: [{
@@ -80,107 +80,161 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
   barChartType = 'bar';
   barChartLegend = true;
   barChartData = [
-    { 
-      data: [65.50, 59, 50, 80, 81, 56, 55, 40, 0 ], 
+    {
+      data: [65.50, 59, 50, 80, 81, 56, 55, 40, 0],
       label: 'mes'
     }
   ];
 
-  barChartColors =  [
-    { 
+  barChartColors = [
+    {
       hoverBackgroundColor: '#1d9dd3',
-      backgroundColor:'silver',
-     },
+      backgroundColor: 'silver',
+    },
   ];
 
   // MatPaginator Inputs
   length = 100;
   pageSize = 10;
   pageSizeOptions: number[] = [5, 10, 25, 100];
- 
+
+  usersSummary = [];
+  rawResult = [];
+  resultToShow = [];
+
+  totalDays = 0;
+
+  currentDate = '';
+
   constructor(
     private subscriptionsRechargesReportService: SubscriptionsRechargesReportService,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
     public dialog: MatDialog,
-    ) {
+  ) {
 
   }
 
 
   ngOnInit() {
+    this.currentDate = moment().format('DD MMMM').toString()
 
     this.initForms();
 
     this.listenAllFilters();
-    this.updateData(null, null, null);
+    const initDate = moment().startOf('week');
+    const endDate = moment();
+    this.updateData(null, initDate.valueOf(), endDate.valueOf());
+    this.listenTypeFilterChanges();
 
 
   }
 
-  initForms(){
-
+  initForms() {
     this.secondaryFilterForm = new FormGroup({
       type: new FormControl('SUBSCRIPTION_PAYMENT')
     });
   }
 
 
-  listenAllFilters(){
+  listenAllFilters() {
 
     combineLatest(
-      this.secondaryFilterForm.valueChanges.pipe(
-        startWith(this.secondaryFilterForm.get('type').value)
-      ),
       this.daysFilters$,
       this.weekFilters$
     ).pipe(
-      mergeMap(([paymentOrRecharge, daysFilters, weekFilters]) => {
-        
-        const initTimestamp = 0;
-        const endTimestamp = 0;
+      filter(([a, b]) =>  a || b ),
+      mergeMap(([daysFilters, weekFilters]) => {
 
-        console.log({ daysFilters, weekFilters })
+        const initTimestamp = daysFilters.initDate;
+        const endTimestamp = daysFilters.endDate;
 
-
-        const filters = {
-          type: paymentOrRecharge,
+        return of({
+          type: null,
           initTimestamp,
-          endTimestamp          
-        }
-
-        return of(filters);
+          endTimestamp
+        });
 
       }),
-      tap(filtersValue => console.log('FILTROS SECUNDARIOS ==> ', filtersValue))
+    ).subscribe((filters) => {
+      this.updateData(null, filters.initTimestamp, filters.endTimestamp);
+    });
 
-    ).subscribe()
 
 
 
   }
 
-  updateData(type, dateInit, dateEnd){
-    this.subscriptionsRechargesReportService.getReportByDays$(type, 'DAY',  dateInit, dateEnd)
+  listenTypeFilterChanges(){
+    this.secondaryFilterForm.get('type').valueChanges
+    .pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(typeSelected => {
+
+      this.barChartLabels = [];
+      this.barChartData[0].data = [];
+      this.totalAmount = 0;
+      this.totalDays = 0;
+      this.usersSummary = [];
+
+
+      this.resultToShow = this.rawResult.filter(e => e.type === typeSelected);
+
+      this.resultToShow.forEach((v: any, i) => {
+        this.barChartLabels.push(moment(v.timestamp).format('DD MMM').toString());
+        this.barChartData[0].data.push(v.amountValue);
+        this.totalAmount = this.totalAmount + v.amountValue;
+        v.users.forEach(user => {
+          const userFound = this.usersSummary.find(u => u.username === user.username);
+          if (userFound) {
+            userFound.count += user.count;
+            userFound.value += user.value;
+            userFound.days += user.days || 0;
+          } else {
+            this.usersSummary.push(user);
+          }
+        });
+      });
+
+
+
+    });
+  }
+
+
+  updateData(type, dateInit, dateEnd) {
+    this.subscriptionsRechargesReportService.getReportByDays$(type, 'DAY', dateInit, dateEnd)
       .pipe(
-        // mergeMap(response => this.graphQlAlarmsErrorHandler$(response)),
-        // map(result => (result.data || {}).managementReportSubscriptionRecharge),
-        // filter(dataResult => dataResult ),
-        tap((result) => {
-          console.log('RESULT ==> ', result);
+        map((result: any) => (result.data || {}).managementReportSubscriptionRecharge || []),
+        map(rawResponse => JSON.parse(JSON.stringify(rawResponse)))
+      ).subscribe((result: any[]) => {
+        console.log({ RESULTADO: result });
+        this.rawResult = result;
+        this.resultToShow = result.filter(e => e.type === this.secondaryFilterForm.get('type').value);
 
-          this.barChartLabels = [];
-          this.barChartData[0].data = [];
-          this.totalAmount = 0;
-          result.forEach((v, i) => {
-            this.barChartLabels.push(v.date);
-            this.barChartData[0].data.push(v.amountValue);
-            //console.log(new Intl.NumberFormat('ban', { style: 'currency', currency: 'USD' }).format(v.amountValue).toString());
-            this.totalAmount = this.totalAmount + v.amountValue
+
+        this.barChartLabels = [];
+        this.barChartData[0].data = [];
+        this.totalAmount = 0;
+        this.totalDays = 0;
+        this.usersSummary = [];
+        this.resultToShow.forEach((v: any, i) => {
+          this.barChartLabels.push(moment(v.timestamp).format('DD MMM').toString());
+          this.barChartData[0].data.push(v.amountValue);
+          this.totalAmount = this.totalAmount + v.amountValue;
+          v.users.forEach(user => {
+            const userFound = this.usersSummary.find(u => u.username === user.username);
+            if (userFound) {
+              userFound.count += user.count;
+              userFound.value += user.value;
+              userFound.days += user.days || 0;
+            } else {
+              this.usersSummary.push(user);
+            }
           });
+        });
 
-        })
-      ).subscribe();
+      });
   }
 
 
@@ -189,11 +243,11 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
       width: '250px'
     });
 
-    dialogRef.afterClosed() 
-    .subscribe(result => {
-      console.log('The dialog was closed', result);
-      this.daysFilters$.next(result)
-    });
+    dialogRef.afterClosed()
+      .subscribe(result => {
+        console.log('The dialog was closed', result);
+        this.daysFilters$.next(result);
+      });
   }
 
   openWeekSelectorDialog(): void {
@@ -212,7 +266,7 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
       tap((resp: any) => {
         if (response && Array.isArray(response.errors)) {
           response.errors.forEach(error => {
-            this.showMessageSnackbar('ERRORS.' + ((error.extensions||{}).code || 1) )
+            this.showMessageSnackbar('ERRORS.' + ((error.extensions || {}).code || 1))
           });
         }
         return resp;
