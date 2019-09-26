@@ -79,7 +79,7 @@ class ManagementDashboardCQRS {
           finalRaw.push(...item)
         });
         return finalRaw;
-      }),
+      }),      
       mergeMap(rawResponse => GraphqlResponseTools.buildSuccessResponse$(rawResponse)),
       catchError(error => GraphqlResponseTools.buildErrorResponse$(error) )
     )
