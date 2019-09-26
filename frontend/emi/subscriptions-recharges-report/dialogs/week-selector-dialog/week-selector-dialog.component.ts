@@ -59,12 +59,12 @@ export class WeekSelectorDialogComponent implements OnInit {
   }
 
   updateData(type, dateInit, dateEnd){
-    this.subscriptionsRechargesReportService.getReportByDays$(type, 'DAY',  dateInit, dateEnd)
+    // this.subscriptionsRechargesReportService.getReportByDays$(type, 'DAY',  dateInit, dateEnd)
   }
 
   onInitDateChange(){
     console.log("La fecha inicial ha cambiado");
-    
+
   }
   onEndDateChange(){
     console.log("La fecha final ha cambiado");

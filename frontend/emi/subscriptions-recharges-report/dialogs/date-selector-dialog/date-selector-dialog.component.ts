@@ -67,7 +67,7 @@ export class DateSelectorDialogComponent implements OnInit {
   }
 
   updateData(type, dateInit, dateEnd) {
-    this.subscriptionsRechargesReportService.getReportByDays$(type, 'DAY', dateInit, dateEnd)
+    // this.subscriptionsRechargesReportService.getReportByDays$(this.business type, 'DAY', dateInit, dateEnd)
   }
 
   onInitDateChange() {
