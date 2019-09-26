@@ -26,7 +26,7 @@
                 "path": "subscriptions-recharges-report",
                 "loadChildren": "./main/content/subscriptions-recharges-report/subscriptions-recharges-report.module#SubscriptionsRechargesReportModule",
                 "priority": 1000,
-                "roles" : ["developer", "PLATFORM-ADMIN"],
+                "roles" : ["developer", "PLATFORM-ADMIN", "BUSINESS-OWNER"],
                 "default" : false
             }            
         ],
