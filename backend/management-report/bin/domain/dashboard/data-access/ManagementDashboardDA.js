@@ -47,7 +47,7 @@ class ManagementDashboardDA {
       tap(x => { if (x.result.ok !== 1) throw (new Error(`BusinessUnitSummary(id:${id}) updated failed`)); }),
     );
   }
-  
+
 
   static getBusinessSummaryReport$(businessId, timestampType, initDate, endDate){
     const collection = mongoDB.db.collection(COLLECTION_NAME);
@@ -55,6 +55,7 @@ class ManagementDashboardDA {
     return defer(() => collection.find(query, {projection: {pos:1,timestamp:1}}).sort({timestamp:1}).toArray())
   }
 
+  
   
 }
 /**
