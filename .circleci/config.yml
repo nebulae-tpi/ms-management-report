@@ -20,7 +20,7 @@ jobs:
   build-frontend:
     working_directory: ~/nebulae/
     docker:
-      - image: circleci/node:10.12.0
+      - image: circleci/node:9.9.0
         command: bash
     steps:
       - attach_workspace:
@@ -29,15 +29,15 @@ jobs:
           name: Register Micro-FrontEnd + Compose UI
           command: |            
             source ~/nebulae/repo/.circleci/scripts/gitChanged.sh
-            cd ~/nebulae/repo/
+            cd ~/nebulae/repo/            
             gitChanged frontend || echo $GCP_SERVICE_ACCOUNT_DEV | base64 --decode --ignore-garbage > /tmp/gcloud-service-key.json
             gitChanged frontend || npm config set prefix '~/.npm-global'
             gitChanged frontend || export PATH=~/.npm-global/bin:$PATH
             gitChanged frontend || source ~/.profile
             gitChanged frontend || npm install -g @nebulae/cli
-            gitChanged frontend || npm install -g @angular/cli
+            gitChanged frontend || npm install -g @angular/cli@7.3.9
             gitChanged frontend || nebulae register microfrontend --microservice-id=management-report --frontend-id=emi --setup-file=/home/circleci/nebulae/repo/etc/mfe-setup.json --store-type=GCP_DATASTORE --gcp-service-account-token=/tmp/gcloud-service-key.json            
-            gitChanged frontend || nebulae compose-ui production --shell-type=FUSE2_ANGULAR --shell-repo=https://github.com/nebulae-tpi/emi.git --frontend-id=emi --output-dir=/home/circleci/nebulae/frontend/emi/ --store-type=GCP_DATASTORE --gcp-service-account-token=/tmp/gcloud-service-key.json
+            gitChanged frontend || nebulae compose-ui production --shell-finalEnvFile=$FILE_ENV_FRONTEND --shell-type=FUSE2_ANGULAR --shell-repo=https://github.com/nebulae-tpi/emi.git --frontend-id=emi --output-dir=/home/circleci/nebulae/frontend/emi/ --store-type=GCP_DATASTORE --gcp-service-account-token=/tmp/gcloud-service-key.json
             gitChanged frontend || ls /home/circleci/nebulae/frontend/emi/           
       - run:
           name: Download SHELL Repository
@@ -74,7 +74,7 @@ jobs:
   build-api-emi:    
     working_directory: ~/nebulae/
     docker:
-      - image: circleci/node:10.12
+      - image: circleci/node:10.15.1
         command: bash
     steps:
       - attach_workspace:
@@ -90,25 +90,25 @@ jobs:
             gitChanged api/emi-gateway || source ~/.profile
             gitChanged api/emi-gateway || npm install -g @nebulae/cli
             gitChanged api/emi-gateway || nebulae register microapi --microservice-id=management-report --api-id=emi-gateway --setup-file=/home/circleci/nebulae/repo/etc/emi-mapi-setup.json --store-type=GCP_DATASTORE --gcp-service-account-token=/tmp/gcloud-service-key.json            
-            gitChanged api/emi-gateway || nebulae compose-api production --shell-finalEnvFile=$FILE_ENV_FRONTEND --api-type=NEBULAE_GATEWAY --api-repo=https://github.com/nebulae-tpi/emi-gateway.git --api-id=emi-gateway --output-dir=/home/circleci/nebulae/api/emi-gateway/ --store-type=GCP_DATASTORE --gcp-service-account-token=/tmp/gcloud-service-key.json      
+            gitChanged api/emi-gateway || nebulae compose-api production --api-type=NEBULAE_GATEWAY --api-repo=https://github.com/nebulae-tpi/emi-gateway.git --api-id=emi-gateway --output-dir=/home/circleci/nebulae/api/emi-gateway/ --store-type=GCP_DATASTORE --gcp-service-account-token=/tmp/gcloud-service-key.json      
             gitChanged api/emi-gateway || ls /home/circleci/nebulae/api/emi-gateway/
       - setup_remote_docker
       - run:
-          name: Build docker image (emi-gateway) and push it to hub
+          name: Build docker image and push it to hub
           command: | 
             source ~/nebulae/repo/.circleci/scripts/gitChanged.sh
             cd ~/nebulae/repo/
             mkdir -p ~/nebulae/api
             gitChanged api/emi-gateway || ( cd  ~/nebulae/api/ && git clone --depth=1 https://github.com/nebulae-tpi/emi-gateway  ~/nebulae/api/shell )      
             gitChanged api/emi-gateway || ls ~/nebulae/api/shell
-            gitChanged api/emi-gateway || export DOCKERHUB_IMAGE=emi-gateway
+            gitChanged api/emi-gateway || export DOCKERHUB_IMAGE=emigateway
             gitChanged api/emi-gateway || export API_SHELL_PATH=/home/circleci/nebulae/api/
             gitChanged api/emi-gateway || ( cd ~/nebulae/api/shell && sh ~/nebulae/api/shell/deployment/docker/build-docker-hub.sh  && cd ~/nebulae/repo/ )
-            gitChanged api/emi-gateway || echo $DOCKERHUB_NAMESPACE/$DOCKERHUB_IMAGE@$(docker pull $DOCKERHUB_NAMESPACE/$DOCKERHUB_IMAGE:latest | grep sha256 | cut -c 9-) > ~/nebulae/api/DOCKERHUB_GENERATED_IMAGE_DIGEST
+            gitChanged api/emi-gateway || echo $DOCKERHUB_NAMESPACE/$DOCKERHUB_IMAGE@$(docker pull $DOCKERHUB_NAMESPACE/$DOCKERHUB_IMAGE:latest | grep sha256 | cut -c 9-) > ~/nebulae/api/EMI_DOCKERHUB_GENERATED_IMAGE_DIGEST
       - persist_to_workspace:
           root: ~/nebulae/
           paths:
-            - api  
+            - api    
 
 ################# MBINIT ################            
   build-mbinit:    
@@ -149,7 +149,7 @@ jobs:
             mkdir ~/nebulae/backend
             cp ~/nebulae/go/mbinit ~/nebulae/repo/backend/management-report/
             export DOCKERHUB_IMAGE=management-report.backend.management-report
-            export DOCKERHUB_TAG=0.0.34
+            export DOCKERHUB_TAG=0.0.35
             gitChanged backend/management-report || docker build  -t $DOCKERHUB_NAMESPACE/$DOCKERHUB_IMAGE:$DOCKERHUB_TAG -t $DOCKERHUB_NAMESPACE/$DOCKERHUB_IMAGE:latest ~/nebulae/repo/backend/management-report/
             gitChanged backend/management-report || docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS
             gitChanged backend/management-report || docker push $DOCKERHUB_NAMESPACE/$DOCKERHUB_IMAGE:$DOCKERHUB_TAG
@@ -160,7 +160,7 @@ jobs:
             - backend
 
 ################# DEPLOYMENT ################
-  deploy-prod:
+  deploy-dev:
       working_directory: ~/nebulae/
       docker:
         - image: google/cloud-sdk:latest
@@ -184,12 +184,13 @@ jobs:
         - run:
             name: Deploy emi-gateway API
             command: |
-              (ls ~/nebulae/api/DOCKERHUB_GENERATED_IMAGE_DIGEST && echo docker image DIGEST to set $(< ~/nebulae/api/DOCKERHUB_GENERATED_IMAGE_DIGEST) ) || echo api not found
-              (ls ~/nebulae/api/DOCKERHUB_GENERATED_IMAGE_DIGEST && kubectl set image deployment/api-emi-gateway api-emi-gateway=$(< ~/nebulae/api/DOCKERHUB_GENERATED_IMAGE_DIGEST) ) || echo api not found
+              (ls ~/nebulae/api/EMI_DOCKERHUB_GENERATED_IMAGE_DIGEST && echo docker image DIGEST to set $(< ~/nebulae/api/EMI_DOCKERHUB_GENERATED_IMAGE_DIGEST) ) || echo api not found
+              (ls ~/nebulae/api/EMI_DOCKERHUB_GENERATED_IMAGE_DIGEST && kubectl set image deployment/api-emi-gateway api-emi-gateway=$(< ~/nebulae/api/EMI_DOCKERHUB_GENERATED_IMAGE_DIGEST) ) || echo api not found       
         - run:
             name: Deploy BackEnds 
             command: |
-              kubectl apply -f ~/nebulae/repo/deployment/gke/              
+              for xi in $(ls ~/nebulae/repo/deployment/gke/*.y*ml); do sed -i s/DOCKERHUB/$DOCKERHUB_NAMESPACE/ $xi ; done
+              kubectl apply -f ~/nebulae/repo/deployment/gke/            
 
 
 
@@ -228,7 +229,7 @@ workflows:
             branches:
               only:
                 - develop
-      - deploy-prod:
+      - deploy-dev:
           context: TPI
           requires:
             - build-frontend
@@ -266,7 +267,7 @@ workflows:
             branches:
               only:
                 - master
-      - deploy-prod:
+      - deploy-dev:
           context: TPI_PROD
           name: deploy-prod-prod
           requires:
