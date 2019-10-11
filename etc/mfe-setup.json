@@ -30,7 +30,7 @@
                 "default" : false
             }            
         ],
-        "preBuildCommands": [],
+        "preBuildCommands": [ ],
         "environmentVars": {
         }
     }

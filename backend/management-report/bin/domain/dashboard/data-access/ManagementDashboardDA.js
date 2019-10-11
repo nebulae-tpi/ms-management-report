@@ -52,9 +52,12 @@ class ManagementDashboardDA {
   static getBusinessSummaryReport$(businessId, timespanType, initDate, endDate){
     const collection = mongoDB.db.collection(COLLECTION_NAME);
         
-    const query = { businessId, timespanType, timestamp: { $gte: initDate, $lte: endDate } };
+    const query = { businessId, timespanType, timestamp: { $gte: initDate, $lte: endDate }}; 
     console.log('MONGO QUERY ==> ', query);
-    return defer(() => collection.find(query, {projection: {pos:1,timestamp:1}}).sort({timestamp:1}).toArray())
+    return defer(() => collection
+      .find(query, { projection: { pos: 1, timestamp: 1 } })
+      .sort({ timestamp: 1 })
+      .toArray());
   }
 
   

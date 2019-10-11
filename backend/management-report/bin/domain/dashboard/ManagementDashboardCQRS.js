@@ -29,9 +29,9 @@ class ManagementDashboardCQRS {
   }
 
   managementReportSubscriptionRecharge$({ args }, authToken){
-    console.log( "managementReportSubscriptionRecharge", {...args});
+    console.log( "managementReportSubscriptionRecharge args", {...args});
     
-    const { type, timestampType, initDate, endDate } = args;
+    const { timestampType, initDate, endDate } = args;
     let { businessId } = args;
     if(!businessId){
       businessId = authToken.businessId;
@@ -39,7 +39,7 @@ class ManagementDashboardCQRS {
 
     return ManagementDashboardDA.getBusinessSummaryReport$(businessId, timestampType, initDate, endDate)
     .pipe(
-      
+      // tap(r => console.log("precarga", JSON.stringify(r))),
       mergeMap(result => from(result)
         .pipe(
           map(value => {
@@ -79,7 +79,13 @@ class ManagementDashboardCQRS {
           finalRaw.push(...item)
         });
         return finalRaw;
-      }),      
+      }),
+      // tap(r => {
+      //   console.log('RESULTADO FINAL');
+      //   r.forEach(e => {
+      //     console.log(e.users)
+      //   })
+      // }),
       mergeMap(rawResponse => GraphqlResponseTools.buildSuccessResponse$(rawResponse)),
       catchError(error => GraphqlResponseTools.buildErrorResponse$(error) )
     )

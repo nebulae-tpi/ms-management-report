@@ -21,6 +21,6 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-  <button mat-raised-button (click)="closeButton(true)">Ok</button>
+  <button mat-raised-button [disabled]="!dateFiltersForm.valid" (click)="closeButton(true)">Ok</button>
   <button mat-raised-button mat-dialog-close color="warn" (click)="closeButton(false)">Cancelar</button>
 </mat-dialog-actions>

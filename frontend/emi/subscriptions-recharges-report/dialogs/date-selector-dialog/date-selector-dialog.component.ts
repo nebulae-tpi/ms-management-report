@@ -1,5 +1,4 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { SubscriptionsRechargesReportService } from '../../subscriptions-recharges-report.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import * as moment from 'moment';
@@ -8,6 +7,7 @@ import { tap, map, mergeMap, filter } from 'rxjs/operators';
 
 
 @Component({
+  // tslint:disable-next-line: component-selector
   selector: 'date-selector-dialog',
   templateUrl: './date-selector-dialog.component.html',
   styleUrls: ['./date-selector-dialog.component.scss']
@@ -15,8 +15,8 @@ import { tap, map, mergeMap, filter } from 'rxjs/operators';
 export class DateSelectorDialogComponent implements OnInit {
 
   constructor(
-    private subscriptionsRechargesReportService: SubscriptionsRechargesReportService,
-    private dialogRef: MatDialogRef<DateSelectorDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
+    private dialogRef: MatDialogRef<DateSelectorDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any) {
 
   }
 
@@ -29,52 +29,54 @@ export class DateSelectorDialogComponent implements OnInit {
   dateFiltersForm: FormGroup;
 
   ngOnInit() {
-    //this.updateData(null, null, null);
     this.initForms();
+    console.log(this.data);
   }
 
   initForms() {
-    this.minInitDate = moment('2019-01-01').startOf('month');
-    this.maxInitDate = moment().add(1, 'months').endOf('day');
+    this.minInitDate = moment('2019-01-01').startOf('month').valueOf();
+    this.maxInitDate = moment().endOf('day');
 
-    const startOfMonth = moment().startOf('month');
-    const initTimeStampValue = moment().subtract(1, 'day').startOf('day');
-    const endOfMonth = moment().endOf('day');
-    this.minEndDate = startOfMonth;
-    this.maxEndDate = endOfMonth;
+
+
+    // const startOfMonth = moment().startOf('month');
+    // const initTimeStampValue = moment().subtract(1, 'day').startOf('day');
+
+    this.minEndDate = this.minInitDate;
+    this.maxEndDate = this.maxInitDate;
 
     this.dateFiltersForm = new FormGroup({
-      initTimestamp: new FormControl(moment().startOf('week')),
-      endTimestamp: new FormControl(moment().endOf('day')),
+      initTimestamp: new FormControl(this.data.minDateSelected),
+      endTimestamp: new FormControl(this.data.maxDateSelected),
     });
   }
 
-  listenDateFilters() {
-    this.dateFiltersForm.valueChanges
-      .pipe(
-        tap(filtersValue => console.log('FILTRO DE DIAS ==> ', filtersValue)),
-        map(filtersValue => ({
-          initTimestamp: filtersValue.initTimestamp.valueOf(),
-          endTimestamp: filtersValue.endTimestamp.valueOf(),
-        })
-        )
-      ).subscribe(
-        (filters => {
-          const { initTimestamp, endTimestamp } = filters;
-          this.updateData('', initTimestamp, endTimestamp);
-        })
-      );
-  }
+  // listenDateFilters() {
+  //   this.dateFiltersForm.valueChanges
+  //     .pipe(
+  //       tap(filtersValue => console.log('FILTRO DE DIAS ==> ', filtersValue)),
+  //       map(filtersValue => ({
+  //         initTimestamp: filtersValue.initTimestamp.valueOf(),
+  //         endTimestamp: filtersValue.endTimestamp.valueOf(),
+  //       })
+  //       )
+  //     ).subscribe(
+  //       (filters => {
+  //         const { initTimestamp, endTimestamp } = filters;
+  //         this.updateData('', initTimestamp, endTimestamp);
+  //       })
+  //     );
+  // }
 
-  updateData(type, dateInit, dateEnd) {
-    // this.subscriptionsRechargesReportService.getReportByDays$(this.business type, 'DAY', dateInit, dateEnd)
-  }
+  // updateData(type, dateInit, dateEnd) {
+  //   // this.subscriptionsRechargesReportService.getReportByDays$(this.business type, 'DAY', dateInit, dateEnd)
+  // }
 
   onInitDateChange() {
-    console.log("La fecha inicial ha cambiado");
+    this.minEndDate = this.dateFiltersForm.get('initTimestamp').value;
   }
   onEndDateChange() {
-    console.log("La fecha final ha cambiado");
+    this.maxInitDate = this.dateFiltersForm.get('endTimestamp').value;
   }
 
   closeButton(okButton: Boolean) {

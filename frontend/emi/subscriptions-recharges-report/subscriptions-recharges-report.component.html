@@ -1,6 +1,9 @@
 <div id="sample" class="page-layout carded left-sidenav" fusePerfectScrollbar>
 
-  <div class="caja-sample" flexLayout="column">
+  <div *ngIf="!businessIdSelected" class="selectBusinessUnit">
+    Selecciona por favor una unidad de Negocio
+  </div>
+  <div [ngClass]="{ 'hide-element': !businessIdSelected }" class="caja-sample" flexLayout="column">
 
     <div class="filterk">
       <div class="cabe">
@@ -17,10 +20,10 @@
           </div>
         </div>
 
-        
+
         <div class="formD">
           <button mat-raised-button (click)="openDateSelectorDialog()">Selecciona los días</button>
-          <button mat-raised-button (click)="openWeekSelectorDialog()">Selecciona el mes</button>
+          <!-- <button mat-raised-button (click)="openWeekSelectorDialog()">Selecciona el mes</button> -->
         </div>
 
         <!--filtros por mes-->
@@ -34,7 +37,7 @@
       <div class="cuer">
         <!--fecha seleccionada-->
         <div class="title">
-          {{ currentDate }}
+          {{ minDateAsString }} - {{ maxDateAsString }}
         </div>
         <!--informacion por días-->
         <div class="info">
@@ -48,29 +51,31 @@
                 <thead>
                   <tr>
                     <th>Día</th>
-                    <th>Total días</th>
+                    <th *ngIf="secondaryFilterForm.controls['type'].value == 'SUBSCRIPTION_PAYMENT'">Total Días</th>
+                    <th *ngIf="secondaryFilterForm.controls['type'].value == 'WALLET_RECHARGES'">Total Recargas</th>
                     <th>Total</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let daySummaryItem of [1, 2, 3]" >
+                  <tr *ngFor="let daySummaryItem of summaryPerDayOnPage">
                     <td>
                       <p>Día</p>
-                      10/20/19
+                      {{ daySummaryItem.date }}
                     </td>
                     <td>
-                      <p>Total días</p>
-                      120
+                      <p *ngIf="secondaryFilterForm.controls['type'].value == 'SUBSCRIPTION_PAYMENT'"> Total Días </p>
+                      <p *ngIf="secondaryFilterForm.controls['type'].value == 'WALLET_RECHARGES'"> Total Recargas </p>
+                       {{ daySummaryItem.count }}
                     </td>
                     <td>
                       <p>Total</p>
-                      $150.000
+                      {{ daySummaryItem.totalCash | currency:'' :'symbol':'4.0-0' }}
                     </td>
                   </tr>
                 </tbody>
               </table>
 
-              <mat-paginator [length]="length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions">
+              <mat-paginator #paginator [length]="tableLength" [pageIndex]="tablePageIndex" [pageSize]="tablePageSize" [pageSizeOptions]="tablePageSizeOptions">
               </mat-paginator>
             </div>
           </div>
@@ -85,18 +90,20 @@
               <table class="simple">
                 <thead>
                   <tr>
-                    <th>total días</th>
-                    <th>Total</th>
+                    <th *ngIf="secondaryFilterForm.controls['type'].value == 'SUBSCRIPTION_PAYMENT'"> Total Días </th>
+                    <th *ngIf="secondaryFilterForm.controls['type'].value == 'WALLET_RECHARGES'"> Total Recargas </th>
+                    <th>Dinero total</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td>
-                      <p>Total días</p>
+                      <p *ngIf="secondaryFilterForm.controls['type'].value == 'SUBSCRIPTION_PAYMENT'"> Total Días </p>
+                      <p *ngIf="secondaryFilterForm.controls['type'].value == 'WALLET_RECHARGES'"> Total Decargas </p>
                       {{ totalDays }}
                     </td>
                     <td>
-                      <p>Total</p>
+                      <p> Dinero total </p>
                       ${{ totalAmount | number }}
                     </td>
                   </tr>
@@ -130,8 +137,8 @@
                 {{user.username}}
               </div>
               <div class="ven">
-                <p>{{ user.count }}</p>
-                <span>${{user.value}}</span>
+                <p>{{ user.days }}</p>
+                <span>{{user.value | currency:'' :'symbol':'4.0-0' }}</span>
               </div>
             </div>
           </div>

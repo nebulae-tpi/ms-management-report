@@ -28,11 +28,10 @@ type Query {
   getHelloWorldFromManagementReport: HelloWorldManagementReport
   "get report by day "
   managementReportSubscriptionRecharge(
-    businessId: String,
-    type: String,
-    timestampType: String,
-    initDate: BigInt!,
-    endDate: BigInt!
+   businessId: String!,
+   timestampType: String!,
+   initDate: BigInt!,
+   endDate: BigInt! 
   ): [ManagementReportSummary]
 }
 

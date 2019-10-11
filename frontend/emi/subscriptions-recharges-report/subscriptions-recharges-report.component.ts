@@ -1,19 +1,19 @@
 import { SubscriptionsRechargesReportService } from './subscriptions-recharges-report.service';
 import { DateSelectorDialogComponent } from './dialogs/date-selector-dialog/date-selector-dialog.component';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { fuseAnimations } from '../../../core/animations';
-import { Subscription } from 'rxjs/Subscription';
-import * as Rx from 'rxjs/Rx';
+// tslint:disable-next-line: import-blacklist
 import { Subject } from 'rxjs/Rx';
 import { tap, map, mergeMap, filter, startWith, takeUntil } from 'rxjs/operators';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import * as moment from 'moment';
-import { of, combineLatest, BehaviorSubject } from 'rxjs';
+import { of, combineLatest, BehaviorSubject, defer } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar, MatPaginator } from '@angular/material';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { WeekSelectorDialogComponent } from './dialogs/week-selector-dialog/week-selector-dialog.component';
 import { ToolbarService } from '../../toolbar/toolbar.service';
+import { KeycloakService } from 'keycloak-angular';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -31,14 +31,16 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
   totalAmount = 0;
   secondaryFilterForm: FormGroup;
 
-  minInitDate;
-  maxInitDate;
 
-  minEndDate;
-  maxEndDate;
+  minDateSelected;
+  minDateAsString = '';
+  maxDateSelected;
+  maxDateAsString = '';
+
+
 
   weekOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-  monthOptions = ['JAN', 'FEB', 'MARCH', 'APRIL']
+  monthOptions = ['JAN', 'FEB', 'MARCH', 'APRIL'];
 
   barChartOptions = {
     scaleShowVerticalLines: false,
@@ -66,7 +68,7 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
           return 'Día ' + data.labels[tooltipItem[0].index];
         },
         label: function (tooltipItems, data) {
-          return 'Total: $' + new Intl.NumberFormat(["ban", "id"]).format(tooltipItems.yLabel);
+          return 'Total: $' + new Intl.NumberFormat(['ban', 'id']).format(tooltipItems.yLabel);
         },
         footer: function (tooltipItem, data) {
           return '';
@@ -95,9 +97,12 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
   ];
 
   // MatPaginator Inputs
-  length = 100;
-  pageSize = 10;
-  pageSizeOptions: number[] = [5, 10, 25, 100];
+  tableLength = 100;
+  tablePageSize = 10;
+  tablePageIndex = 0;
+  tablePageSizeOptions: number[] = [5, 10, 25, 100];
+
+  @ViewChild('paginator') paginator: MatPaginator;
 
   usersSummary = [];
   rawResult = [];
@@ -106,33 +111,70 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
   totalDays = 0;
 
   currentDate = '';
-  selectedBusinessId = null;
+
+  businessIdSelected = null;
+
+  summaryPerDayCompleted: any[] = [];
+  summaryPerDayOnPage = [];
 
   constructor(
     private subscriptionsRechargesReportService: SubscriptionsRechargesReportService,
     private translate: TranslateService,
     private snackBar: MatSnackBar,
     public dialog: MatDialog,
-    private toolbarService: ToolbarService
+    private toolbarService: ToolbarService,
+    private keyCloakService: KeycloakService
   ) {
 
   }
 
 
   ngOnInit() {
-    this.currentDate = moment().format('DD MMMM').toString()
+
+    this.minDateSelected = moment().startOf('week').valueOf();
+    this.minDateAsString = moment(this.minDateSelected).locale('es').format('DD MMMM').toString();
+    this.maxDateSelected = moment().endOf('day').valueOf();
+    this.maxDateAsString = moment(this.maxDateSelected).locale('es').format('DD MMMM').toString();
+
 
     this.initForms();
 
     this.listenAllFilters();
-    const initDate = moment().startOf('week');
-    const endDate = moment();
-    this.updateData(null, initDate.valueOf(), endDate.valueOf());
-    this.listenTypeFilterChanges();
-    this.listenBusinessUnitChanges();
 
+    // this.listenBuinessUnitChanges();
+
+    this.listenTypeFilterChanges();
+    this.listenPaginatorChanges();
 
   }
+
+
+  // listenBuinessUnitChanges(){
+  //   this.toolbarService.onSelectedBusiness$
+  //   .pipe()
+  //   .subscribe( buSelected => {
+  //     this.businessUnitSelected = (buSelected || {}).id;
+  //   })
+  // }
+
+  makeFirstQuery(){
+    const initDate = moment().startOf('week');
+    const endDate = moment();
+
+    defer(() => this.keyCloakService.loadUserProfile())
+    .pipe(
+      takeUntil(this.ngUnsubscribe)
+    )
+    .subscribe(
+      (userProfile: any) => {
+        this.businessIdSelected = ((userProfile || {}).business).id;
+        console.log(' ====> ' , userProfile.business.id);
+      // this.updateData(null, initDate.valueOf(), endDate.valueOf());
+      }
+    );
+
+  }
+
 
   initForms() {
     this.secondaryFilterForm = new FormGroup({
@@ -141,39 +183,63 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
   }
 
 
-  listenBusinessUnitChanges(){
-    this.toolbarService.onSelectedBusiness$
+  listenPaginatorChanges(){
+    this.paginator.page
     .pipe(
-      filter((bs: any) => bs),
-      tap(business =>  this.selectedBusinessId = business.id )
-    ).subscribe();
+      takeUntil(this.ngUnsubscribe)
+    )
+    .subscribe(
+      ({ pageIndex, pageSize }) => {
+        this.tablePageIndex = pageIndex;
+        this.tablePageSize = pageSize;
+
+        const start = this.tablePageSize * this.tablePageIndex;
+        const end = start + this.tablePageSize;
+
+        this.summaryPerDayOnPage = this.summaryPerDayCompleted.slice( start, end );
+      }
+    );
+
   }
 
-  listenAllFilters() {
 
+
+  /**
+   * Listen the filters and send request to fetch data
+   */
+  listenAllFilters() {
     combineLatest(
       this.daysFilters$,
-      this.weekFilters$
+      this.weekFilters$,
+      this.toolbarService.onSelectedBusiness$
     ).pipe(
-      filter(([a, b]) =>  a || b ),
-      mergeMap(([daysFilters, weekFilters]) => {
+      filter(([daysFilters, weekFilters, business]) => {
 
-        const initTimestamp = daysFilters.initDate;
-        const endTimestamp = daysFilters.endDate;
+        return business != null && business.id != null;
+
+      } ),
+      mergeMap(([daysFilters, weekFilters, business]) => {
+
+        this.businessIdSelected = business.id;
+
+        console.log({ daysFilters, weekFilters, business });
+
+        const initTimestamp = daysFilters ? daysFilters.initDate : this.minDateSelected;
+        const endTimestamp = daysFilters ? daysFilters.endDate : this.maxDateSelected;
 
         return of({
-          type: null,
-          initTimestamp,
-          endTimestamp
+          businessId: business.id,
+          timestampType: 'DAY',
+          initDate: initTimestamp,
+          endDate: endTimestamp
         });
 
       }),
-    ).subscribe((filters) => {
-      this.updateData(null, filters.initTimestamp, filters.endTimestamp);
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(
+      (filters: any) => {
+        this.updateData(filters.businessId , filters.initDate, filters.endDate);
     });
-
-
-
 
   }
 
@@ -183,30 +249,61 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
       takeUntil(this.ngUnsubscribe)
     ).subscribe(typeSelected => {
 
+      // reset table paginator configuration
+      this.tablePageSize = 10;
+      this.tablePageIndex = 0;
+
+
       this.barChartLabels = [];
       this.barChartData[0].data = [];
       this.totalAmount = 0;
       this.totalDays = 0;
       this.usersSummary = [];
-
+      this.summaryPerDayCompleted = [];
 
       this.resultToShow = this.rawResult.filter(e => e.type === typeSelected);
 
+      this.tableLength = this.resultToShow.length;
+
+
       this.resultToShow.forEach((v: any, i) => {
+
+
+
+        // console.log('ITEM TO SHOW => ', v);
+        const summaryItem = this.extractSummarryItem(v, typeSelected);
+        this.summaryPerDayCompleted.push(summaryItem);
+        this.totalDays  += typeSelected === 'SUBSCRIPTION_PAYMENT' ? v.days : v.count;
         this.barChartLabels.push(moment(v.timestamp).format('DD MMM').toString());
         this.barChartData[0].data.push(v.amountValue);
         this.totalAmount = this.totalAmount + v.amountValue;
+
         v.users.forEach(user => {
           const userFound = this.usersSummary.find(u => u.username === user.username);
           if (userFound) {
             userFound.count += user.count;
             userFound.value += user.value;
-            userFound.days += user.days || 0;
+            if ( typeSelected === 'SUBSCRIPTION_PAYMENT'){
+              userFound.days +=  user.days;
+            }
+
           } else {
             this.usersSummary.push(user);
           }
         });
+
       });
+
+      const start = this.tablePageSize * this.tablePageIndex;
+      const end = start + this.tablePageSize;
+
+      this.summaryPerDayOnPage = this.summaryPerDayCompleted.slice( start, end );
+
+
+
+
+      // console.log(this.resultToShow);
+
 
 
 
@@ -214,15 +311,32 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
   }
 
 
-  updateData(type, dateInit, dateEnd) {
-    this.subscriptionsRechargesReportService.getReportByDays$(this.selectedBusinessId, type, 'DAY', dateInit, dateEnd)
+  /**
+   *
+   * @param businessId business id
+   * @param dateInit date init
+   * @param dateEnd date end
+   */
+  updateData(businessId, dateInit, dateEnd) {
+    this.subscriptionsRechargesReportService.getReportByDays$(businessId, 'DAY', dateInit, dateEnd)
       .pipe(
         map((result: any) => (result.data || {}).managementReportSubscriptionRecharge || []),
-        map(rawResponse => JSON.parse(JSON.stringify(rawResponse)))
+        map(rawResponse => JSON.parse(JSON.stringify(rawResponse))),
+        takeUntil(this.ngUnsubscribe)
       ).subscribe((result: any[]) => {
-        console.log({ RESULTADO: result });
+
+        // reset table paginator configuration
+        this.tablePageSize = 10;
+        this.tablePageIndex = 0;
+
+
+        // console.log({ RESULTADO: result });
         this.rawResult = result;
-        this.resultToShow = result.filter(e => e.type === this.secondaryFilterForm.get('type').value);
+        const filterType = this.secondaryFilterForm.get('type').value;
+        this.resultToShow = result.filter(e => e.type === filterType );
+        this.tableLength = this.resultToShow.length;
+
+
 
 
         this.barChartLabels = [];
@@ -230,10 +344,19 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
         this.totalAmount = 0;
         this.totalDays = 0;
         this.usersSummary = [];
+        this.summaryPerDayCompleted = [];
+
         this.resultToShow.forEach((v: any, i) => {
+
+          const summaryItem = this.extractSummarryItem(v, filterType);
+          this.summaryPerDayCompleted.push(summaryItem);
+
+          this.totalDays += filterType === 'SUBSCRIPTION_PAYMENT' ? v.days : v.count;
           this.barChartLabels.push(moment(v.timestamp).format('DD MMM').toString());
           this.barChartData[0].data.push(v.amountValue);
           this.totalAmount = this.totalAmount + v.amountValue;
+
+
           v.users.forEach(user => {
             const userFound = this.usersSummary.find(u => u.username === user.username);
             if (userFound) {
@@ -244,21 +367,60 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
               this.usersSummary.push(user);
             }
           });
+
         });
 
+        const start = this.tablePageSize * this.tablePageIndex;
+        const end = start + this.tablePageSize;
+
+        this.summaryPerDayOnPage = this.summaryPerDayCompleted.slice( start, end );
+
+
+
       });
+  }
+
+  extractSummarryItem(value: any, filterType: string){
+
+    return ({
+      date: moment(value.timestamp).format('DD MMM').toString(),
+      count: filterType === 'SUBSCRIPTION_PAYMENT' ? value.days : value.count,
+      totalCash: value.amountValue
+    });
+
   }
 
 
   openDateSelectorDialog(): void {
     const dialogRef = this.dialog.open(DateSelectorDialogComponent, {
-      width: '250px'
+      width: '250px',
+      data: {
+        minDateSelected: this.minDateSelected,
+        maxDateSelected: this.maxDateSelected
+      }
+
     });
 
     dialogRef.afterClosed()
+      .pipe(
+        filter((result: any) => result),
+        takeUntil(this.ngUnsubscribe)
+      )
       .subscribe(result => {
-        console.log('The dialog was closed', result);
+
+
+        console.log('DIALOG RESPONSE ==> ', {...result});
+        this.minDateSelected = result.initDate;
+        this.minDateAsString = moment(result.initDate).locale('es').format('DD MMMM').toString();
+        this.maxDateSelected = result.endDate;
+        this.maxDateAsString = moment(result.endDate).locale('es').format('DD MMMM').toString();
+
+        // console.log("%%%%%%%%%%%%%%%%%%%55", this.minDateAsString, this.maxDateAsString);
+
+        // console.log('The dialog was closed', result);
+
         this.daysFilters$.next(result);
+
       });
   }
 
@@ -267,18 +429,17 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
       width: '250px'
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed', result);
+    dialogRef.afterClosed().pipe(takeUntil(this.ngUnsubscribe)).subscribe(result => {
+
     });
   }
-
 
   graphQlAlarmsErrorHandler$(response) {
     return of(JSON.parse(JSON.stringify(response))).pipe(
       tap((resp: any) => {
         if (response && Array.isArray(response.errors)) {
           response.errors.forEach(error => {
-            this.showMessageSnackbar('ERRORS.' + ((error.extensions || {}).code || 1))
+            this.showMessageSnackbar('ERRORS.' + ((error.extensions || {}).code || 1));
           });
         }
         return resp;
@@ -301,7 +462,7 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
       translationData.push(detailMessageKey);
     }
 
-    this.translate.get(translationData).subscribe(data => {
+    this.translate.get(translationData).pipe(takeUntil(this.ngUnsubscribe)).subscribe(data => {
       this.snackBar.open(
         messageKey ? data[messageKey] : '',
         detailMessageKey ? data[detailMessageKey] : '',
@@ -311,7 +472,6 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
       );
     });
   }
-
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();
