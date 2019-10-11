@@ -2,7 +2,7 @@
 
 const uuidv4 = require("uuid/v4");
 const { of, interval, throwError, from } = require("rxjs");
-const { take, mergeMap, catchError, map, toArray, tap, reduce } = require('rxjs/operators');
+const { take, mergeMap, catchError, map, toArray, tap, reduce, filter } = require('rxjs/operators');
 const Event = require("@nebulae/event-store").Event;
 const eventSourcing = require("../../tools/EventSourcing")();
 const ManagementDashboardDA = require('./data-access/ManagementDashboardDA');
