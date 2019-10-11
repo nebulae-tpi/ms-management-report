@@ -42,11 +42,13 @@ class ManagementDashboardCQRS {
       // tap(r => console.log("precarga", JSON.stringify(r))),
       mergeMap(result => from(result)
         .pipe(
+          filter(report => report.pos),
           map(value => {
-
+            value.pos.subscriptionSale = value.pos.subscriptionSale || { count: 0, days: 0, value: 0 }
             const usersOfSubscriptionSale = Object.keys(value.pos.subscriptionSale)
               .filter(atr => !['count', 'days', 'value'].includes(atr));
 
+            value.pos.walletRecharge = value.pos.walletRecharge || { count: 0, value: 0 }
             const usersOfWalletRecharge = Object.keys(value.pos.walletRecharge)
               .filter(atr => !['count', 'days', 'value'].includes(atr));
 
