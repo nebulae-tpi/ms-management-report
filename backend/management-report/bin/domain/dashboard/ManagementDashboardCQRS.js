@@ -37,7 +37,9 @@ class ManagementDashboardCQRS {
       businessId = authToken.businessId;
     }
 
-    return ManagementDashboardDA.getBusinessSummaryReport$(businessId, timestampType, initDate, endDate)
+    const initTimestamp = new Date(new Date(initDate).toLocaleString('es-CO', { timeZone: 'America/Bogota' })).getTime();
+    const endTimestamp = new Date(new Date(endDate).toLocaleString('es-CO', { timeZone: 'America/Bogota' })).getTime();
+    return ManagementDashboardDA.getBusinessSummaryReport$(businessId, timestampType, initTimestamp, endTimestamp)
     .pipe(
       // tap(r => console.log("precarga", JSON.stringify(r))),
       mergeMap(result => from(result)
