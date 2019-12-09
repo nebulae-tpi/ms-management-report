@@ -85,8 +85,12 @@ export class DateSelectorDialogComponent implements OnInit {
 
     const answer = okButton
       ? {
-          initDate: initTimestamp ? initTimestamp.startOf('day').valueOf() : moment().startOf('week').valueOf(),
-          endDate: endTimestamp ? endTimestamp.endOf('day').valueOf() : moment().endOf('week').valueOf()
+          initDate: (typeof initTimestamp === 'number')
+            ? initTimestamp
+            : initTimestamp ? initTimestamp.startOf('day').valueOf() : moment().startOf('week').valueOf(),
+          endDate: ( typeof endTimestamp === 'number' )
+            ? endTimestamp 
+            : endTimestamp ? endTimestamp.endOf('day').valueOf() : moment().endOf('week').valueOf()
         }
       : undefined;
 
