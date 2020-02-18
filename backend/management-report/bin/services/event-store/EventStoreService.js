@@ -129,7 +129,12 @@ class EventStoreService {
       SaleWalletRechargeCommited: {
         fn: ManagementDashboardES.handleSaleWalletRechargeCommited$,
         obj: ManagementDashboardES
-      }
+      },
+      // WALLET
+      WalletTransactionCommited: {
+        fn: ManagementDashboardES.handleSaleWalletTransactionCommitted$,
+        obj: ManagementDashboardES
+      },
     };
   }
 
@@ -146,6 +151,10 @@ class EventStoreService {
       {
         aggregateType: "Sale",
         eventType: "SaleWalletRechargeCommited"
+      },
+      {
+        aggregateType: "Wallet",
+        eventType: "WalletTransactionCommited"
       }
     ]
   }

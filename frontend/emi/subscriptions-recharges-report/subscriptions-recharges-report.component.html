@@ -16,6 +16,7 @@
               <mat-select formControlName="type">
                 <mat-option value="SUBSCRIPTION_PAYMENT">Pago de Subscripción</mat-option>
                 <mat-option value="WALLET_RECHARGES">Recarga de billetera</mat-option>
+                <mat-option value="PAY_PER_SERVICE">Pagos por Servicio</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
@@ -54,6 +55,7 @@
                     <th>Día</th>
                     <th *ngIf="secondaryFilterForm.controls['type'].value == 'SUBSCRIPTION_PAYMENT'">Total Días</th>
                     <th *ngIf="secondaryFilterForm.controls['type'].value == 'WALLET_RECHARGES'">Total Recargas</th>
+                    <th *ngIf="secondaryFilterForm.controls['type'].value == 'PAY_PER_SERVICE'">Total Servicios pagos</th>
                     <th>Total</th>
                   </tr>
                 </thead>
@@ -66,6 +68,7 @@
                     <td>
                       <p *ngIf="secondaryFilterForm.controls['type'].value == 'SUBSCRIPTION_PAYMENT'"> Total Días </p>
                       <p *ngIf="secondaryFilterForm.controls['type'].value == 'WALLET_RECHARGES'"> Total Recargas </p>
+                      <p *ngIf="secondaryFilterForm.controls['type'].value == 'PAY_PER_SERVICE'">Total Servicios pagos</p>
                        {{ daySummaryItem.count }}
                     </td>
                     <td>
@@ -93,6 +96,7 @@
                   <tr>
                     <th *ngIf="secondaryFilterForm.controls['type'].value == 'SUBSCRIPTION_PAYMENT'"> Total Días </th>
                     <th *ngIf="secondaryFilterForm.controls['type'].value == 'WALLET_RECHARGES'"> Total Recargas </th>
+                    <th *ngIf="secondaryFilterForm.controls['type'].value == 'PAY_PER_SERVICE'">Total Servicios pagos</th>
                     <th>Dinero total</th>
                   </tr>
                 </thead>
@@ -101,6 +105,7 @@
                     <td>
                       <p *ngIf="secondaryFilterForm.controls['type'].value == 'SUBSCRIPTION_PAYMENT'"> Total Días </p>
                       <p *ngIf="secondaryFilterForm.controls['type'].value == 'WALLET_RECHARGES'"> Total Decargas </p>
+                      <p *ngIf="secondaryFilterForm.controls['type'].value == 'PAY_PER_SERVICE'">Total Servicios pagos</p>
                       {{ totalDays }}
                     </td>
                     <td>
@@ -129,8 +134,8 @@
 
           <!--las personas que vendieron en estos días y
             cuanto en los días como en el valor total-->
-          <p>Personas</p>
-          <div class="personas">
+          <p *ngIf="secondaryFilterForm.controls['type'].value !== 'PAY_PER_SERVICE'">Personas</p>
+          <div class="personas" *ngIf="secondaryFilterForm.controls['type'].value !== 'PAY_PER_SERVICE'">
             <div *ngFor="let user of usersSummary" class="per1">
               <div class="nombre">
                 {{user.username}}

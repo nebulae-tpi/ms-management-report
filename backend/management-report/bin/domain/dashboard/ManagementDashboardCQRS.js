@@ -44,9 +44,11 @@ class ManagementDashboardCQRS {
       // tap(r => console.log("precarga", JSON.stringify(r))),
       mergeMap(result => from(result)
         .pipe(
-          filter(report => report.pos),
           map(value => {
-            value.pos.subscriptionSale = value.pos.subscriptionSale || { count: 0, days: 0, value: 0 }
+            value.pos = value.pos || {};
+            value.payPerService = value.payPerService || { count: 0, value: 0 };
+
+            value.pos.subscriptionSale = value.pos.subscriptionSale || { count: 0, days: 0, value: 0 };
             const usersOfSubscriptionSale = Object.keys(value.pos.subscriptionSale)
               .filter(atr => !['count', 'days', 'value'].includes(atr));
 
@@ -71,6 +73,14 @@ class ManagementDashboardCQRS {
                 count: value.pos.walletRecharge.count,
                 amountValue: value.pos.walletRecharge.value,
                 users: usersOfWalletRecharge.map(user => ({ username: user.replace(/\-/g, "."), ...value.pos.walletRecharge[user] }))
+              },
+              {
+                timestampType,
+                timestamp: value.timestamp,
+                type: 'PAY_PER_SERVICE',
+                count: value.payPerService.count,
+                amountValue: value.payPerService.value,
+                users: []
               }
             ]
         }),

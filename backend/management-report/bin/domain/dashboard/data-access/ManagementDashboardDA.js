@@ -55,7 +55,7 @@ class ManagementDashboardDA {
     const query = { businessId, timespanType, timestamp: { $gte: initDate, $lte: endDate }}; 
     console.log('MONGO QUERY ==> ', query);
     return defer(() => collection
-      .find(query, { projection: { pos: 1, timestamp: 1 } })
+      .find(query, { projection: { pos: 1, payPerService: 1, timestamp: 1 } })
       .sort({ timestamp: 1 })
       .toArray());
   }

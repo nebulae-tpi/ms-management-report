@@ -131,6 +131,47 @@ class ManagementDashboardCQRS {
 
   }
 
+  handleSaleWalletTransactionCommitted$({ user, timestamp, data }){
+
+    const { concept, toId, amount, businessId } = data; 
+
+    if(concept !== "PAY_PER_SERVICE") return of({});
+    
+    const isFromDriverToBU = (businessId === toId );
+
+    const { year, monthStr, month, week, dayOfWeek, dayOfWeekStr, dayOfYear, dayOfMonth, hourOfDay, minute, second } = this.decomposeTime(timestamp);
+    
+    const fieldsToSet = [['lastUpdate', timestamp]];
+    const fieldsToInc = [];
+    
+    fieldsToInc.push(['payPerService.count', isFromDriverToBU ? 1 : -1 ]);
+    fieldsToInc.push(['payPerService.value', isFromDriverToBU ? amount : (amount * -1) ]);
+
+    return forkJoin(
+      // YEAR
+      DashboardDA.updateTimeBox$(timestamp,
+        [ ['businessId', businessId], ['timespanType', 'YEAR'], ['YEAR', year] ], fieldsToSet, fieldsToInc
+      ),
+      // MONTH
+      DashboardDA.updateTimeBox$(timestamp,
+        [ ['businessId', businessId], ['timespanType', 'MONTH'], ['YEAR', year], ['MONTH', month] ],
+        fieldsToSet, fieldsToInc, [['MONTH_NAME', monthStr]]
+      ),
+      // WEEK
+      DashboardDA.updateTimeBox$(timestamp,
+        [ ['businessId', businessId], ['timespanType', 'WEEK'], ['YEAR', year], ['MONTH', month], ['WEEK', week] ],
+        fieldsToSet, fieldsToInc
+      ),
+      // DAY
+      DashboardDA.updateTimeBox$(timestamp,
+        [ ['businessId', businessId], ['timespanType', 'DAY'], ['YEAR', year], ['MONTH', month], ['DAY', dayOfMonth] ],
+        fieldsToSet, fieldsToInc,
+        [ ['WEEK', week], ['DAY_OF_YEAR', dayOfYear], ['DAY_NAME', dayOfWeekStr], ['DAY_OF_WEEK', dayOfWeek] ]
+      ),
+    );
+
+  }
+
   decomposeTime(ts) {
     //2018-12-4 17:12:05
     const date = new Date(new Date(ts).toLocaleString('es-CO', { timeZone: 'America/Bogota' }));
