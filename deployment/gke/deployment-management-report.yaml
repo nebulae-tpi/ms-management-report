@@ -13,7 +13,7 @@ spec:
         app: management-report
     spec:      
       containers:
-      - image: nebulaetpi/management-report.backend.management-report:0.0.41
+      - image: nebulaetpi/management-report.backend.management-report:0.0.42
         name: management-report
         volumeMounts:
         - name: google-application-credentials
