@@ -136,7 +136,7 @@ class ManagementDashboardCQRS {
     const { concept, toId, amount, businessId } = data;
 
     if(businessId ==="bf2807e4-e97f-43eb-b15d-09c2aff8b2ab"){
-      console.log("TRANSACTION COMMITED", {...data});      
+      console.log("TRANSACTION COMMITED", {...data});
     }
     
     if(!["PAY_PER_SERVICE_REFUND", "PAY_PER_SERVICE"].includes(concept)) return of({});
