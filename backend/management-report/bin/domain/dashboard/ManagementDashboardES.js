@@ -134,7 +134,7 @@ class ManagementDashboardCQRS {
   handleSaleWalletTransactionCommitted$({ user, timestamp, data }){
 
     const { concept, toId, amount, businessId } = data; 
-
+    
     if(!["PAY_PER_SERVICE_REFUND", "PAY_PER_SERVICE"].includes(concept)) return of({});
     
     const isFromDriverToBU = (businessId === toId );
