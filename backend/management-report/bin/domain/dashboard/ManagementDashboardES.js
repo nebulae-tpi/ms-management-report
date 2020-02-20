@@ -135,7 +135,7 @@ class ManagementDashboardCQRS {
 
     const { concept, toId, amount, businessId } = data; 
 
-    if(concept !== "PAY_PER_SERVICE") return of({});
+    if(!["PAY_PER_SERVICE_REFUND", "PAY_PER_SERVICE"].includes(concept)) return of({});
     
     const isFromDriverToBU = (businessId === toId );
 
