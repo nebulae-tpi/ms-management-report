@@ -111,9 +111,10 @@
 
         .personas{
             display: flex;
-            justify-content: space-evenly;
+            /*justify-content: space-evenly;*/
             background: white;
             padding: 10px;
+            overflow: auto;
 
             .per1{
                 padding: 0 10px;
