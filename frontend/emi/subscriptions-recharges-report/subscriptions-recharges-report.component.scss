@@ -109,18 +109,23 @@
             padding: 10px;
         }
 
-        .personas{
-            display: flex;
-            /*justify-content: space-evenly;*/
+        .personasP{
+            overflow: auto;
             background: white;
             padding: 10px;
-            overflow: auto;
+        }
+        .personas{
+            display: flex;
+            margin: 10px 0;
+            /*justify-content: space-evenly;*/
 
             .per1{
                 padding: 0 10px;
                 text-align: center;
                 border-right: 1px solid #ddd;
-                width: 33.33%;
+                width: 120px;
+                min-width: 120px;
+                max-width: 120px;
 
                 .nombre{
                     font-size: 12px;

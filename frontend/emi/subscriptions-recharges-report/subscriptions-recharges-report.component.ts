@@ -105,6 +105,8 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
   @ViewChild('paginator') paginator: MatPaginator;
 
   usersSummary = [];
+  usersSummaryPair = [];
+  usersSummaryOdd = [];
   rawResult = [];
   resultToShow = [];
 
@@ -259,6 +261,8 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
       this.totalAmount = 0;
       this.totalDays = 0;
       this.usersSummary = [];
+      this.usersSummaryPair = [];
+      this.usersSummaryOdd = [];
       this.summaryPerDayCompleted = [];
 
       this.resultToShow = this.rawResult.filter(e => e.type === typeSelected);
@@ -286,11 +290,18 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
             if ( typeSelected === 'SUBSCRIPTION_PAYMENT'){
               userFound.days +=  user.days;
             }
-
           } else {
             this.usersSummary.push(user);
           }
         });
+
+        
+        if(this.usersSummary && this.usersSummary.length > 0){  
+          const userPair = this.usersSummary.filter((user, index) => (index % 2) === 0);
+          const userOdd = this.usersSummary.filter((user, index) => (index % 2) === 1);
+          this.usersSummaryPair = userPair;
+          this.usersSummaryOdd = userOdd;
+        }
 
       });
 
@@ -344,6 +355,8 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
         this.totalAmount = 0;
         this.totalDays = 0;
         this.usersSummary = [];
+        this.usersSummaryPair = [];
+        this.usersSummaryOdd = [];
         this.summaryPerDayCompleted = [];
 
         this.resultToShow.forEach((v: any, i) => {
@@ -367,6 +380,13 @@ export class SubscriptionsRechargesReportComponent implements OnInit, OnDestroy 
               this.usersSummary.push(user);
             }
           });
+
+          if(this.usersSummary && this.usersSummary.length > 0){
+            const userPair = this.usersSummary.filter((user, index) => (index % 2) === 0);
+            const userOdd = this.usersSummary.filter((user, index) => (index % 2) === 1);
+            this.usersSummaryPair = userPair;
+            this.usersSummaryOdd = userOdd;
+          }
 
         });
 

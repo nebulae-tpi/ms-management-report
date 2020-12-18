@@ -54,7 +54,8 @@
                     <th>Día</th>
                     <th *ngIf="secondaryFilterForm.controls['type'].value == 'SUBSCRIPTION_PAYMENT'">Total Días</th>
                     <th *ngIf="secondaryFilterForm.controls['type'].value == 'WALLET_RECHARGES'">Total Recargas</th>
-                    <th *ngIf="secondaryFilterForm.controls['type'].value == 'PAY_PER_SERVICE'">Total Servicios pagos</th>
+                    <th *ngIf="secondaryFilterForm.controls['type'].value == 'PAY_PER_SERVICE'">Total Servicios pagos
+                    </th>
                     <th>Total</th>
                   </tr>
                 </thead>
@@ -67,8 +68,9 @@
                     <td>
                       <p *ngIf="secondaryFilterForm.controls['type'].value == 'SUBSCRIPTION_PAYMENT'"> Total Días </p>
                       <p *ngIf="secondaryFilterForm.controls['type'].value == 'WALLET_RECHARGES'"> Total Recargas </p>
-                      <p *ngIf="secondaryFilterForm.controls['type'].value == 'PAY_PER_SERVICE'">Total Servicios pagos</p>
-                       {{ daySummaryItem.count }}
+                      <p *ngIf="secondaryFilterForm.controls['type'].value == 'PAY_PER_SERVICE'">Total Servicios pagos
+                      </p>
+                      {{ daySummaryItem.count }}
                     </td>
                     <td>
                       <p>Total</p>
@@ -78,7 +80,8 @@
                 </tbody>
               </table>
 
-              <mat-paginator #paginator [length]="tableLength" [pageIndex]="tablePageIndex" [pageSize]="tablePageSize" [pageSizeOptions]="tablePageSizeOptions">
+              <mat-paginator #paginator [length]="tableLength" [pageIndex]="tablePageIndex" [pageSize]="tablePageSize"
+                [pageSizeOptions]="tablePageSizeOptions">
               </mat-paginator>
             </div>
           </div>
@@ -95,7 +98,8 @@
                   <tr>
                     <th *ngIf="secondaryFilterForm.controls['type'].value == 'SUBSCRIPTION_PAYMENT'"> Total Días </th>
                     <th *ngIf="secondaryFilterForm.controls['type'].value == 'WALLET_RECHARGES'"> Total Recargas </th>
-                    <th *ngIf="secondaryFilterForm.controls['type'].value == 'PAY_PER_SERVICE'">Total Servicios pagos</th>
+                    <th *ngIf="secondaryFilterForm.controls['type'].value == 'PAY_PER_SERVICE'">Total Servicios pagos
+                    </th>
                     <th>Dinero total</th>
                   </tr>
                 </thead>
@@ -104,7 +108,8 @@
                     <td>
                       <p *ngIf="secondaryFilterForm.controls['type'].value == 'SUBSCRIPTION_PAYMENT'"> Total Días </p>
                       <p *ngIf="secondaryFilterForm.controls['type'].value == 'WALLET_RECHARGES'"> Total Decargas </p>
-                      <p *ngIf="secondaryFilterForm.controls['type'].value == 'PAY_PER_SERVICE'">Total Servicios pagos</p>
+                      <p *ngIf="secondaryFilterForm.controls['type'].value == 'PAY_PER_SERVICE'">Total Servicios pagos
+                      </p>
                       {{ totalDays }}
                     </td>
                     <td>
@@ -134,14 +139,27 @@
           <!--las personas que vendieron en estos días y
             cuanto en los días como en el valor total-->
           <p *ngIf="secondaryFilterForm.controls['type'].value !== 'PAY_PER_SERVICE'">Personas</p>
-          <div class="personas" *ngIf="secondaryFilterForm.controls['type'].value !== 'PAY_PER_SERVICE'">
-            <div *ngFor="let user of usersSummary" class="per1">
-              <div class="nombre">
-                {{user.username}}
+          <div class="personasP" *ngIf="secondaryFilterForm.controls['type'].value !== 'PAY_PER_SERVICE'">
+            <div class="personas">
+              <div *ngFor="let userPair of usersSummaryPair" class="per1">
+                <div class="nombre">
+                  {{userPair.username}}
+                </div>
+                <div class="ven">
+                  <p>{{ userPair.days }}</p>
+                  <span>{{userPair.value | currency:'' :'symbol':'4.0-0' }}</span>
+                </div>
               </div>
-              <div class="ven">
-                <p>{{ user.days }}</p>
-                <span>{{user.value | currency:'' :'symbol':'4.0-0' }}</span>
+            </div>
+            <div class="personas">
+              <div *ngFor="let userOdd of usersSummaryOdd" class="per1">
+                <div class="nombre">
+                  {{userOdd.username}}
+                </div>
+                <div class="ven">
+                  <p>{{ userOdd.days }}</p>
+                  <span>{{userOdd.value | currency:'' :'symbol':'4.0-0' }}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -152,4 +170,3 @@
     </div>
   </div>
 </div>
-
