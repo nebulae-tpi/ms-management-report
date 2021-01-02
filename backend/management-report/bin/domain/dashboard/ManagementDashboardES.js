@@ -179,7 +179,8 @@ class ManagementDashboardCQRS {
   decomposeTime(ts) {
     //2018-12-4 17:12:05
     const date = new Date(new Date(ts).toLocaleString('es-CO', { timeZone: 'America/Bogota' }));
-    const { year, week, day } = gregorian.weekNumberYear(date);
+    const { week, day } = gregorian.weekNumberYear(date);
+    const year = new Date().getFullYear();
     const daysOfWeek = ['MON', 'TUE', 'WED', 'THU', 'FRY', 'SAT', 'SUN'];
     const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC',];
     return {
