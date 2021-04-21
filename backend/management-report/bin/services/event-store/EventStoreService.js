@@ -153,7 +153,7 @@ class EventStoreService {
         eventType: "SaleWalletRechargeCommited"
       },
       {
-        aggregateType: "Wallet",
+        aggregateType: "WalletTransaction",
         eventType: "WalletTransactionCommited"
       }
     ]
