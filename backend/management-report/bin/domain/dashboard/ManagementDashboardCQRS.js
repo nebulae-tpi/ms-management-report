@@ -24,6 +24,7 @@ const {
  */
 let instance;
 
+
 class ManagementDashboardCQRS {
   constructor() {
   }

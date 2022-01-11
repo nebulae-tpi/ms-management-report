@@ -1,4 +1,4 @@
-apiVersion: apps/v1beta2 # for versions before 1.9.0 use apps/v1beta2
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
   name: management-report
@@ -13,7 +13,7 @@ spec:
         app: management-report
     spec:      
       containers:
-      - image: nebulaetpi/management-report.backend.management-report:0.0.47
+      - image: nebulaetpi/management-report.backend.management-report:0.0.48
         name: management-report
         volumeMounts:
         - name: google-application-credentials
